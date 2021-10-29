@@ -2,20 +2,20 @@
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px">
     </a>
-    <h1 align="center">Yii _____</h1>
+    <h1 align="center">Yii application runner</h1>
     <br>
 </p>
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/_____/v/stable.png)](https://packagist.org/packages/yiisoft/_____)
-[![Total Downloads](https://poser.pugx.org/yiisoft/_____/downloads.png)](https://packagist.org/packages/yiisoft/_____)
-[![Build status](https://github.com/yiisoft/_____/workflows/build/badge.svg)](https://github.com/yiisoft/_____/actions?query=workflow%3Abuild)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/_____/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/_____/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/_____/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/_____/?branch=master)
-[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2F_____%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/_____/master)
-[![static analysis](https://github.com/yiisoft/_____/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/_____/actions?query=workflow%3A%22static+analysis%22)
-[![type-coverage](https://shepherd.dev/github/yiisoft/_____/coverage.svg)](https://shepherd.dev/github/yiisoft/_____)
+[![Latest Stable Version](https://poser.pugx.org/yiisoft/yii-runner/v/stable.png)](https://packagist.org/packages/yiisoft/yii-runner)
+[![Total Downloads](https://poser.pugx.org/yiisoft/yii-runner/downloads.png)](https://packagist.org/packages/yiisoft/yii-runner)
+[![Build status](https://github.com/yiisoft/yii-runner/workflows/build/badge.svg)](https://github.com/yiisoft/yii-runner/actions?query=workflow%3Abuild)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/yii-runner/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/yii-runner/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/yii-runner/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/yii-runner/?branch=master)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fyii-runner%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/yii-runner/master)
+[![static analysis](https://github.com/yiisoft/yii-runner/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/yii-runner/actions?query=workflow%3A%22static+analysis%22)
+[![type-coverage](https://shepherd.dev/github/yiisoft/yii-runner/coverage.svg)](https://shepherd.dev/github/yiisoft/yii-runner)
 
-The package ...
+The package defines Yii application runner.
 
 ## Requirements
 
@@ -26,10 +26,31 @@ The package ...
 The package could be installed with composer:
 
 ```shell
-composer require yiisoft/_____ --prefer-dist
+composer require yiisoft/yii-runner --prefer-dist
 ```
 
 ## General usage
+
+Install one of the adapters:
+
+- [RoadRunner](https://github.com/yiisoft/yii-runner-roadrunner)
+
+Instantiate and run it in an entry script:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use App\Runner\RoadRunnerApplicationRunner;
+
+ini_set('display_errors', 'stderr');
+
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/preload.php';
+
+(new RoadRunnerApplicationRunner($_ENV['YII_DEBUG'], $_ENV['YII_ENV']))->run();
+```
 
 ## Testing
 
@@ -60,7 +81,7 @@ The code is statically analyzed with [Psalm](https://psalm.dev/). To run static 
 
 ## License
 
-The Yii _____ is free software. It is released under the terms of the BSD License.
+The Yii yii-runner is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).
