@@ -21,6 +21,9 @@ final class ThrowableHandler implements RequestHandlerInterface
         $this->throwable = $throwable;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         throw $this->throwable;
