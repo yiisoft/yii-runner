@@ -13,7 +13,7 @@ use function is_callable;
 /**
  * Runs application bootstrap configs.
  */
-final class BootstrapRunner
+final class BootstrapRunner implements RunnerInterface
 {
     private ContainerInterface $container;
     private array $bootstrapList;
@@ -27,10 +27,11 @@ final class BootstrapRunner
     public function run(): void
     {
         foreach ($this->bootstrapList as $callback) {
-            if (!(is_callable($callback))) {
+            if (!is_callable($callback)) {
                 $type = get_debug_type($callback);
-                throw new RuntimeException("Bootstrap callback must be callable, $type given.");
+                throw new RuntimeException("Bootstrap callback must be callable, \"$type\" given.");
             }
+
             $callback($this->container);
         }
     }
