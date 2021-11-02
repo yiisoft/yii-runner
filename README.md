@@ -19,7 +19,7 @@ The package defines Yii application runner.
 
 ## Requirements
 
-- PHP 7.4 or higher.
+- PHP 8.0 or higher.
 
 ## Installation
 
