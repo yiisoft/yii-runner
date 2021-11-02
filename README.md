@@ -33,7 +33,9 @@ composer require yiisoft/yii-runner --prefer-dist
 
 Install one of the adapters:
 
+- [Console](https://github.com/yiisoft/yii-runner-console)
 - [RoadRunner](https://github.com/yiisoft/yii-runner-roadrunner)
+- [Web](https://github.com/yiisoft/yii-runner-web)
 
 Instantiate and run it in an entry script:
 
@@ -81,7 +83,7 @@ The code is statically analyzed with [Psalm](https://psalm.dev/). To run static 
 
 ## License
 
-The Yii yii-runner is free software. It is released under the terms of the BSD License.
+The Yii Runner is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).
