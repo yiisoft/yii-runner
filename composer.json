@@ -53,6 +53,11 @@
             "Yiisoft\\Yii\\Runner\\Tests\\": "tests"
         }
     },
+    "extra": {
+        "config-plugin-options": {
+            "build-merge-plan": false
+        }
+    },
     "config": {
         "sort-packages": true
     },
