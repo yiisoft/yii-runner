@@ -44,14 +44,12 @@ Instantiate and run it in an entry script:
 
 declare(strict_types=1);
 
-use App\Runner\RoadRunnerApplicationRunner;
-
-ini_set('display_errors', 'stderr');
+use Yiisoft\Yii\Runner\Http\HttpApplicationRunner;
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/preload.php';
 
-(new RoadRunnerApplicationRunner($_ENV['YII_DEBUG'], $_ENV['YII_ENV']))->run();
+(new HttpApplicationRunner(__DIR__, $_ENV['YII_DEBUG'], $_ENV['YII_ENV']))->run();
 ```
 
 ## Testing
