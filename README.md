@@ -34,8 +34,8 @@ composer require yiisoft/yii-runner --prefer-dist
 Install one of the adapters:
 
 - [Console](https://github.com/yiisoft/yii-runner-console)
+- [HTTP](https://github.com/yiisoft/yii-runner-http)
 - [RoadRunner](https://github.com/yiisoft/yii-runner-roadrunner)
-- [Web](https://github.com/yiisoft/yii-runner-web)
 
 Instantiate and run it in an entry script:
 
