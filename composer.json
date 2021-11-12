@@ -43,6 +43,11 @@
         "vimeo/psalm": "^4.9",
         "yiisoft/test-support": "^1.3"
     },
+    "suggest": {
+        "yiisoft/yii-runner-console": "Allows to run console application",
+        "yiisoft/yii-runner-http": "Allows to run HTTP application",
+        "yiisoft/yii-runner-roadrunner": "Allows to run HTTP application for RoadRunner"
+    },
     "autoload": {
         "psr-4": {
             "Yiisoft\\Yii\\Runner\\": "src"
