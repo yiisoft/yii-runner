@@ -17,9 +17,11 @@ final class ConfigFactoryTest extends TestCase
         $this->assertSame([
             'e1' => [
                 ['app1', 'handler1'],
+                ['before-app', 'before-handler'],
             ],
             'e2' => [
                 ['app2', 'handler2'],
+                ['before-app', 'before-handler'],
             ],
         ], $config->get('events'));
 
@@ -27,9 +29,11 @@ final class ConfigFactoryTest extends TestCase
             'e1' => [
                 ['app3', 'handler3'],
                 ['app1', 'handler1'],
+                ['before-app', 'before-handler'],
             ],
             'e2' => [
                 ['app2', 'handler2'],
+                ['before-app', 'before-handler'],
             ],
         ], $config->get('events-console'));
 
@@ -37,9 +41,11 @@ final class ConfigFactoryTest extends TestCase
             'e1' => [
                 ['app4', 'handler4'],
                 ['app1', 'handler1'],
+                ['before-app', 'before-handler'],
             ],
             'e2' => [
                 ['app2', 'handler2'],
+                ['before-app', 'before-handler'],
             ],
         ], $config->get('events-web'));
     }

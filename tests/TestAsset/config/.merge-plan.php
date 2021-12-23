@@ -10,8 +10,14 @@ return [
                 'params.php',
             ],
         ],
+        'beforeEvents' => [
+            '/' => [
+                'before-events.php',
+            ],
+        ],
         'events' => [
             '/' => [
+                '$beforeEvents',
                 'events.php',
             ],
         ],
