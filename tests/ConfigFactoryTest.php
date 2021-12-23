@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Runner\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Config\ConfigPaths;
 use Yiisoft\Yii\Runner\ConfigFactory;
 
 final class ConfigFactoryTest extends TestCase
 {
     public function testCreate(): void
     {
-        $config = ConfigFactory::create(__DIR__ . '/TestAsset', null);
+        $config = ConfigFactory::create(new ConfigPaths(__DIR__ . '/TestAsset', 'config'), null);
 
         $this->assertSame([
             'e1' => [
