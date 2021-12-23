@@ -14,7 +14,7 @@ use Yiisoft\Config\Modifier\ReverseMerge;
  */
 final class ConfigFactory
 {
-    public static function create(string $rootPath, ?string $environment): Config
+    public static function create(ConfigPaths $paths, ?string $environment): Config
     {
         $eventGroups = [
             'events',
@@ -23,7 +23,7 @@ final class ConfigFactory
         ];
 
         return new Config(
-            new ConfigPaths($rootPath, 'config'),
+            $paths,
             $environment,
             [
                 ReverseMerge::groups(...$eventGroups),
