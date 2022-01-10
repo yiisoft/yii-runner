@@ -38,7 +38,7 @@ final class BootstrapRunnerTest extends TestCase
 
     public function testRunFailure(): void
     {
-        $runner = new BootstrapRunner(new SimpleContainer(), ['callable']);
+        $runner = new BootstrapRunner(new SimpleContainer(), ['not-callable']);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Bootstrap callback must be callable, "string" given.');

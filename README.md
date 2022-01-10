@@ -46,8 +46,7 @@ declare(strict_types=1);
 
 use Yiisoft\Yii\Runner\Http\HttpApplicationRunner;
 
-require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/preload.php';
+require_once __DIR__ . '/autoload.php';
 
 (new HttpApplicationRunner(__DIR__, $_ENV['YII_DEBUG'], $_ENV['YII_ENV']))->run();
 ```

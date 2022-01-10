@@ -9,6 +9,7 @@ use RuntimeException;
 
 use function get_debug_type;
 use function is_callable;
+use function sprintf;
 
 /**
  * Runs application bootstrap configs.
@@ -28,8 +29,10 @@ final class BootstrapRunner implements RunnerInterface
     {
         foreach ($this->bootstrapList as $callback) {
             if (!is_callable($callback)) {
-                $type = get_debug_type($callback);
-                throw new RuntimeException("Bootstrap callback must be callable, \"$type\" given.");
+                throw new RuntimeException(sprintf(
+                    'Bootstrap callback must be callable, "%s" given.',
+                    get_debug_type($callback),
+                ));
             }
 
             $callback($this->container);
