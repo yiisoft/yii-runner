@@ -25,6 +25,9 @@ final class BootstrapRunner implements RunnerInterface
         $this->bootstrapList = $bootstrapList;
     }
 
+    /**
+     * @throws RuntimeException If the bootstrap callback is not callable.
+     */
     public function run(): void
     {
         foreach ($this->bootstrapList as $callback) {
