@@ -5,40 +5,88 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Runner\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use stdClass;
 use Yiisoft\Config\Config;
-use Yiisoft\Config\ConfigInterface;
 use Yiisoft\Config\ConfigPaths;
 use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;
 use Yiisoft\Yii\Event\InvalidListenerConfigurationException;
-use Yiisoft\Yii\Runner\ApplicationRunner;
+use Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner\ApplicationRunner;
 
 final class ApplicationRunnerTest extends TestCase
 {
-    public function testCreateConfig(): void
+    public function testGetConfig(): void
     {
-        $runner = $this->createApplicationRunner();
-        $config = $runner->createConfig();
+        $runner = new ApplicationRunner();
+        $config = $runner->getConfig();
 
         $this->assertSame(['name' => 'John', 'age' => 42], $config->get('params'));
     }
 
-    public function testCreateContainer(): void
+    public function testCreateDefaultConfig(): void
     {
-        $runner = $this->createApplicationRunner();
-        $config = $runner->createConfig();
-        $container = $runner->createContainer($config, 'web');
+        $runner = new ApplicationRunner();
+        $config = $runner->createDefaultConfig();
+
+        $this->assertSame(['name' => 'John', 'age' => 42], $config->get('params'));
+
+        $config2 = $runner->createDefaultConfig();
+
+        $this->assertNotSame($config, $config2);
+        $this->assertSame(['name' => 'John', 'age' => 42], $config2->get('params'));
+    }
+
+    public function testGetConfigAndWithConfig(): void
+    {
+        $config = $this->createConfig();
+        $runner = (new ApplicationRunner())->withConfig($config);
+
+        $this->assertSame($config, $runner->getConfig());
+    }
+
+    public function testGetContainer(): void
+    {
+        $runner = new ApplicationRunner();
+        $config = $runner->getConfig();
+        $container = $runner->getContainer($config, 'web');
         $stdClass = $container->get(stdClass::class);
 
         $this->assertSame('John', $stdClass->name);
         $this->assertSame(42, $stdClass->age);
     }
 
+    public function testCreateDefaultContainer(): void
+    {
+        $runner = new ApplicationRunner();
+        $config = $runner->getConfig();
+
+        $container = $runner->createDefaultContainer($config, 'web');
+        $stdClass = $container->get(stdClass::class);
+
+        $this->assertSame('John', $stdClass->name);
+        $this->assertSame(42, $stdClass->age);
+
+        $container2 = $runner->createDefaultContainer($config, 'web');
+        $stdClass2 = $container2->get(stdClass::class);
+
+        $this->assertNotSame($container, $container2);
+        $this->assertNotSame($stdClass, $stdClass2);
+
+        $this->assertSame('John', $stdClass2->name);
+        $this->assertSame(42, $stdClass2->age);
+    }
+
+    public function testGetContainerAndWithContainer(): void
+    {
+        $container = $this->createContainer();
+        $runner = (new ApplicationRunner())->withContainer($container);
+
+        $this->assertSame($container, $runner->getContainer($this->createConfig(), 'web'));
+    }
+
     public function testRunBootstrap(): void
     {
-        $runner = $this->createApplicationRunner()->withBootstrap('bootstrap-web');
+        $runner = (new ApplicationRunner())->withBootstrap('bootstrap-web');
 
         $this->expectOutputString('Bootstrapping');
 
@@ -47,9 +95,9 @@ final class ApplicationRunnerTest extends TestCase
 
     public function testCheckEvents(): void
     {
-        $runner = $this->createApplicationRunner()->withCheckingEvents('events-fail');
-        $config = $runner->createConfig();
-        $container = $runner->createContainer($config, 'web');
+        $runner = (new ApplicationRunner())->withCheckingEvents('events-fail');
+        $config = $runner->getConfig();
+        $container = $runner->getContainer($config, 'web');
 
         $this->expectException(InvalidListenerConfigurationException::class);
 
@@ -59,20 +107,20 @@ final class ApplicationRunnerTest extends TestCase
     public function testRun(): void
     {
         $this->expectOutputString('');
-        $this->createApplicationRunner()->run();
+        (new ApplicationRunner())->run();
     }
 
     public function testRunWithoutBootstrapAndCheckEvents(): void
     {
         $this->expectOutputString('');
-        $this->createApplicationRunner()->withoutBootstrap()->withoutCheckingEvents()->run();
+        (new ApplicationRunner())->withoutBootstrap()->withoutCheckingEvents()->run();
     }
 
     public function testRunWithSetters(): void
     {
         $this->expectOutputString('Bootstrapping');
 
-        $this->createApplicationRunner()
+        (new ApplicationRunner())
             ->withCheckingEvents('events-web')
             ->withBootstrap('bootstrap-web')
             ->withContainer($this->createContainer())
@@ -83,7 +131,7 @@ final class ApplicationRunnerTest extends TestCase
 
     public function testImmutability(): void
     {
-        $runner = $this->createApplicationRunner();
+        $runner = new ApplicationRunner();
 
         $this->assertNotSame($runner, $runner->withBootstrap('bootstrap-web'));
         $this->assertNotSame($runner, $runner->withoutBootstrap());
@@ -95,49 +143,11 @@ final class ApplicationRunnerTest extends TestCase
 
     private function createConfig(): Config
     {
-        return new Config(new ConfigPaths(__DIR__ . '/Support/application-runner', 'config'));
+        return new Config(new ConfigPaths(__DIR__ . '/Support/ApplicationRunner', 'config'));
     }
 
-    private function createContainer(): ContainerInterface
+    private function createContainer(): Container
     {
         return new Container(ContainerConfig::create());
-    }
-
-    private function createApplicationRunner(): ApplicationRunner
-    {
-        return new class () extends ApplicationRunner {
-            public function __construct()
-            {
-                parent::__construct(__DIR__ . '/Support/application-runner', true, null);
-            }
-
-            public function run(): void
-            {
-                $config = $this->config ?? $this->createConfig();
-                $container = $this->container ?? $this->createContainer($config, 'web');
-                $this->runBootstrap($config, $container);
-                $this->checkEvents($config, $container);
-            }
-
-            public function createConfig(): Config
-            {
-                return parent::createConfig();
-            }
-
-            public function createContainer(ConfigInterface $config, string $definitionEnvironment): Container
-            {
-                return parent::createContainer($config, $definitionEnvironment);
-            }
-
-            public function runBootstrap(ConfigInterface $config, ContainerInterface $container): void
-            {
-                parent::runBootstrap($config, $container);
-            }
-
-            public function checkEvents(ConfigInterface $config, ContainerInterface $container): void
-            {
-                parent::checkEvents($config, $container);
-            }
-        };
     }
 }

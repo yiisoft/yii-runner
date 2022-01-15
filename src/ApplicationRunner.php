@@ -49,9 +49,9 @@ abstract class ApplicationRunner implements RunnerInterface
      *
      * @param string $bootstrapGroup The bootstrap configuration group name.
      *
-     * @return self
+     * @return static
      */
-    public function withBootstrap(string $bootstrapGroup): self
+    public function withBootstrap(string $bootstrapGroup): static
     {
         $new = clone $this;
         $new->bootstrapGroup = $bootstrapGroup;
@@ -61,9 +61,9 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * Returns a new instance and disables the use of bootstrap configuration group.
      *
-     * @return self
+     * @return static
      */
-    public function withoutBootstrap(): self
+    public function withoutBootstrap(): static
     {
         $new = clone $this;
         $new->bootstrapGroup = null;
@@ -77,9 +77,9 @@ abstract class ApplicationRunner implements RunnerInterface
      *
      * @param string $eventsGroup The configuration group name of events for check.
      *
-     * @return self
+     * @return static
      */
-    public function withCheckingEvents(string $eventsGroup): self
+    public function withCheckingEvents(string $eventsGroup): static
     {
         $new = clone $this;
         $new->eventsGroup = $eventsGroup;
@@ -91,9 +91,9 @@ abstract class ApplicationRunner implements RunnerInterface
      *
      * Note: The configuration of events is checked only in debug mode.
      *
-     * @return self
+     * @return static
      */
-    public function withoutCheckingEvents(): self
+    public function withoutCheckingEvents(): static
     {
         $new = clone $this;
         $new->eventsGroup = null;
@@ -105,9 +105,9 @@ abstract class ApplicationRunner implements RunnerInterface
      *
      * @param ConfigInterface $config The config instance.
      *
-     * @return self
+     * @return static
      */
-    public function withConfig(ConfigInterface $config): self
+    public function withConfig(ConfigInterface $config): static
     {
         $new = clone $this;
         $new->config = $config;
@@ -119,43 +119,13 @@ abstract class ApplicationRunner implements RunnerInterface
      *
      * @param ContainerInterface $container The container instance.
      *
-     * @return self
+     * @return static
      */
-    public function withContainer(ContainerInterface $container): self
+    public function withContainer(ContainerInterface $container): static
     {
         $new = clone $this;
         $new->container = $container;
         return $new;
-    }
-
-    /**
-     * @throws ErrorException
-     */
-    protected function createConfig(): Config
-    {
-        return ConfigFactory::create(new ConfigPaths($this->rootPath, 'config'), $this->environment);
-    }
-
-    /**
-     * @throws ErrorException|InvalidConfigException
-     */
-    protected function createContainer(ConfigInterface $config, string $definitionEnvironment): Container
-    {
-        $containerConfig = ContainerConfig::create()->withValidate($this->debug);
-
-        if ($config->has($definitionEnvironment)) {
-            $containerConfig = $containerConfig->withDefinitions($config->get($definitionEnvironment));
-        }
-
-        if ($config->has("providers-$definitionEnvironment")) {
-            $containerConfig = $containerConfig->withProviders($config->get("providers-$definitionEnvironment"));
-        }
-
-        if ($config->has("delegates-$definitionEnvironment")) {
-            $containerConfig = $containerConfig->withDelegates($config->get("delegates-$definitionEnvironment"));
-        }
-
-        return new Container($containerConfig);
     }
 
     /**
@@ -177,5 +147,57 @@ abstract class ApplicationRunner implements RunnerInterface
             /** @psalm-suppress MixedMethodCall */
             $container->get(ListenerConfigurationChecker::class)->check($config->get($this->eventsGroup));
         }
+    }
+
+    /**
+     * @throws ErrorException
+     */
+    protected function getConfig(): ConfigInterface
+    {
+        return $this->config ??= $this->createDefaultConfig();
+    }
+
+    /**
+     * @throws ErrorException|InvalidConfigException
+     */
+    protected function getContainer(ConfigInterface $config, string $definitionEnvironment): ContainerInterface
+    {
+        $this->container ??= $this->createDefaultContainer($config, $definitionEnvironment);
+
+        if ($this->container instanceof Container) {
+            return $this->container->get(ContainerInterface::class);
+        }
+
+        return $this->container;
+    }
+
+    /**
+     * @throws ErrorException
+     */
+    protected function createDefaultConfig(): Config
+    {
+        return ConfigFactory::create(new ConfigPaths($this->rootPath, 'config'), $this->environment);
+    }
+
+    /**
+     * @throws ErrorException|InvalidConfigException
+     */
+    protected function createDefaultContainer(ConfigInterface $config, string $definitionEnvironment): Container
+    {
+        $containerConfig = ContainerConfig::create()->withValidate($this->debug);
+
+        if ($config->has($definitionEnvironment)) {
+            $containerConfig = $containerConfig->withDefinitions($config->get($definitionEnvironment));
+        }
+
+        if ($config->has("providers-$definitionEnvironment")) {
+            $containerConfig = $containerConfig->withProviders($config->get("providers-$definitionEnvironment"));
+        }
+
+        if ($config->has("delegates-$definitionEnvironment")) {
+            $containerConfig = $containerConfig->withDelegates($config->get("delegates-$definitionEnvironment"));
+        }
+
+        return new Container($containerConfig);
     }
 }
