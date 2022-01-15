@@ -29,7 +29,10 @@
     "require": {
         "php": "^8.0",
         "psr/container": "^1.0",
-        "yiisoft/config": "^1.1"
+        "yiisoft/config": "^1.1",
+        "yiisoft/definitions": "^1.0",
+        "yiisoft/di": "^1.0",
+        "yiisoft/yii-event": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",

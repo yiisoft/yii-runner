@@ -12,7 +12,7 @@ final class ConfigFactoryTest extends TestCase
 {
     public function testCreate(): void
     {
-        $config = ConfigFactory::create(new ConfigPaths(__DIR__ . '/TestAsset', 'config'), null);
+        $config = ConfigFactory::create(new ConfigPaths(__DIR__ . '/Support/ConfigFactory', 'config'), null);
 
         $this->assertSame([
             'e1' => [
