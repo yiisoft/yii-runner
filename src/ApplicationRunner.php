@@ -169,7 +169,7 @@ abstract class ApplicationRunner implements RunnerInterface
     }
 
     /**
-     * @throws ErrorException|ContainerExceptionInterface|NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface|ErrorException|NotFoundExceptionInterface
      */
     protected function checkEvents(ConfigInterface $config, ContainerInterface $container): void
     {
