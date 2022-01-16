@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Runner\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use stdClass;
 use Yiisoft\Config\Config;
 use Yiisoft\Config\ConfigPaths;
@@ -79,6 +80,25 @@ final class ApplicationRunnerTest extends TestCase
     public function testGetContainerAndWithContainer(): void
     {
         $container = $this->createContainer();
+        $runner = (new ApplicationRunner())->withContainer($container);
+
+        $this->assertSame($container, $runner->getContainer($this->createConfig(), 'web'));
+    }
+
+    public function testGetContainerAndWithNotYiiContainer(): void
+    {
+        $container = new class () implements ContainerInterface {
+            public function get(string $id): mixed
+            {
+                return null;
+            }
+
+            public function has(string $id): bool
+            {
+                return false;
+            }
+        };
+
         $runner = (new ApplicationRunner())->withContainer($container);
 
         $this->assertSame($container, $runner->getContainer($this->createConfig(), 'web'));
