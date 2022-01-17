@@ -15,7 +15,8 @@
 [![static analysis](https://github.com/yiisoft/yii-runner/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/yii-runner/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/yii-runner/coverage.svg)](https://shepherd.dev/github/yiisoft/yii-runner)
 
-The package defines Yii application runner.
+The package defines Yii application runner. A runner hides application initialization details making configuration
+process easier.
 
 ## Requirements
 

@@ -59,7 +59,7 @@ abstract class ApplicationRunner implements RunnerInterface
     }
 
     /**
-     * Returns a new instance and disables the use of bootstrap configuration group.
+     * Returns a new instance with bootstrapping disabled.
      *
      * @return static
      */
@@ -71,11 +71,11 @@ abstract class ApplicationRunner implements RunnerInterface
     }
 
     /**
-     * Returns a new instance with the specified configuration group of events name for check.
+     * Returns a new instance with the specified name of event configuration group to check.
      *
-     * Note: The configuration of events is checked only in debug mode.
+     * Note: The configuration of events is checked in debug mode only.
      *
-     * @param string $eventsGroup The configuration group name of events for check.
+     * @param string $eventsGroup Name of event configuration group to check.
      *
      * @return static
      */
@@ -87,9 +87,7 @@ abstract class ApplicationRunner implements RunnerInterface
     }
 
     /**
-     * Returns a new instance and disables checking of the event configuration group.
-     *
-     * Note: The configuration of events is checked only in debug mode.
+     * Returns a new instance with disabled event configuration check.
      *
      * @return static
      */
