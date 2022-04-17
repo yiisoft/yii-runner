@@ -40,5 +40,10 @@ return [
                 'bootstrap-web.php',
             ],
         ],
+        'tags-web' => [
+            '/' => [
+                'tags-web.php',
+            ],
+        ],
     ],
 ];
