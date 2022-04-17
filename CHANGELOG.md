@@ -1,8 +1,12 @@
 # Yii Runner Change Log
 
-## 1.0.1 under development
+## 1.1.1 under development
 
 - no changes in this release.
+
+## 1.1.0 April 17, 2022
+
+- New #10: Added container's tags support (xepozz)
 
 ## 1.0.0 January 17, 2022
 
