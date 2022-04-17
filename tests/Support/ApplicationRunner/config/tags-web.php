@@ -8,6 +8,6 @@ use Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner\Support\Repository;
 
 return [
     'repositories' => [
-        Repository::class
+        Repository::class,
     ],
 ];
