@@ -113,9 +113,9 @@ final class ApplicationRunnerTest extends TestCase
         $this->assertTrue($config->has('tags-web'));
 
         $container = $runner->createDefaultContainer($config, 'web');
-        $repos = $container->get('tag@repositories');
+        $repositories = $container->get('tag@repositories');
 
-        $this->assertEquals([new Repository()], $repos);
+        $this->assertEquals([new Repository()], $repositories);
     }
 
     public function testRunBootstrap(): void
