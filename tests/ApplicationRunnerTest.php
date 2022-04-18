@@ -13,6 +13,7 @@ use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;
 use Yiisoft\Yii\Event\InvalidListenerConfigurationException;
 use Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner\ApplicationRunner;
+use Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner\Support\Repository;
 
 final class ApplicationRunnerTest extends TestCase
 {
@@ -102,6 +103,19 @@ final class ApplicationRunnerTest extends TestCase
         $runner = (new ApplicationRunner())->withContainer($container);
 
         $this->assertSame($container, $runner->getContainer($this->createConfig(), 'web'));
+    }
+
+    public function testTags(): void
+    {
+        $runner = new ApplicationRunner();
+        $config = $runner->getConfig();
+
+        $this->assertTrue($config->has('tags-web'));
+
+        $container = $runner->createDefaultContainer($config, 'web');
+        $repositories = $container->get('tag@repositories');
+
+        $this->assertEquals([new Repository()], $repositories);
     }
 
     public function testRunBootstrap(): void
