@@ -143,7 +143,9 @@ abstract class ApplicationRunner implements RunnerInterface
     {
         if ($this->debug && $this->eventsGroup !== null) {
             /** @psalm-suppress MixedMethodCall */
-            $container->get(ListenerConfigurationChecker::class)->check($config->get($this->eventsGroup));
+            $container
+                ->get(ListenerConfigurationChecker::class)
+                ->check($config->get($this->eventsGroup));
         }
     }
 
