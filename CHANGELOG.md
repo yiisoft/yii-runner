@@ -2,7 +2,7 @@
 
 ## 1.1.1 under development
 
-- no changes in this release.
+- Enh #15: Add support for `yiisoft/definitions` version `^2.0` (vjik)
 
 ## 1.1.0 April 18, 2022
 
