@@ -1,8 +1,8 @@
 # Yii Runner Change Log
 
-## 1.2.0 under development
+## 1.1.1 under development
 
-- Chg #16: Update `yiisoft/test-support` to `^2.0` (@rustamwin)
+- no changes in this release.
 
 ## 1.1.0 April 18, 2022
 
