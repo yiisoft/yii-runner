@@ -28,7 +28,7 @@
     ],
     "require": {
         "php": "^8.0",
-        "psr/container": "^1.0",
+        "psr/container": "^1.0|^2.0",
         "yiisoft/config": "^1.1",
         "yiisoft/definitions": "^1.0|^2.0",
         "yiisoft/di": "^1.0",
@@ -36,9 +36,9 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
-        "roave/infection-static-analysis-plugin": "^1.16",
+        "roave/infection-static-analysis-plugin": "^1.20",
         "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.18",
+        "vimeo/psalm": "^4.23",
         "yiisoft/test-support": "^2.0"
     },
     "suggest": {
