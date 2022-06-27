@@ -1,6 +1,6 @@
 # Yii Runner Change Log
 
-## 1.1.2 under development
+## 1.1.2 June 27, 2022
 
 - Enh #19: Add support for `psr/container` version `^2.0` (@vjik)
 
