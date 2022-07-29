@@ -2,7 +2,7 @@
 
 ## 1.1.3 under development
 
-- no changes in this release.
+- Chg #21: Store config inside DI container (@xepozz)
 
 ## 1.1.2 June 27, 2022
 
