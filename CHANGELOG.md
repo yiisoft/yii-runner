@@ -1,5 +1,9 @@
 # Yii Runner Change Log
 
+## 1.2.1 under development
+
+- no changes in this release.
+
 ## 1.2.0 July 29, 2022
 
 - Chg #21: Store config inside DI container (@xepozz)
