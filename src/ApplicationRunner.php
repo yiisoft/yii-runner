@@ -202,6 +202,10 @@ abstract class ApplicationRunner implements RunnerInterface
             $containerConfig = $containerConfig->withTags($config->get("tags-$definitionEnvironment"));
         }
 
+        $containerConfig = $containerConfig->withDefinitions(
+            array_merge($containerConfig->getDefinitions(), [ConfigInterface::class => $config])
+        );
+
         return new Container($containerConfig);
     }
 }
