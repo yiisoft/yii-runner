@@ -52,6 +52,142 @@ require_once __DIR__ . '/autoload.php';
 (new HttpApplicationRunner(__DIR__, $_ENV['YII_DEBUG'], $_ENV['YII_ENV']))->run();
 ```
 
+```php 
+abstract class ApplicationRunner {
+    protected function createDefaultConfig(): Config
+    {
+        return ConfigFactory::create(new ConfigPaths($this->rootPath, 'config'), $this->environment);
+    }
+}
+```
+
+In the ```parent abstract class ApplicationRunner``` of the adapters creates environment configs for one of the development, production,
+test, or other environments you create
+
+Then creates default dependency injection container
+
+```php
+protected function createDefaultContainer(ConfigInterface $config, string $definitionEnvironment): Container
+{
+    $containerConfig = ContainerConfig::create()->withValidate($this->debug);
+
+    if ($config->has($definitionEnvironment)) {
+        $containerConfig = $containerConfig->withDefinitions($config->get($definitionEnvironment));
+    }
+
+    if ($config->has("providers-$definitionEnvironment")) {
+        $containerConfig = $containerConfig->withProviders($config->get("providers-$definitionEnvironment"));
+    }
+
+    if ($config->has("delegates-$definitionEnvironment")) {
+        $containerConfig = $containerConfig->withDelegates($config->get("delegates-$definitionEnvironment"));
+    }
+
+    if ($config->has("tags-$definitionEnvironment")) {
+        $containerConfig = $containerConfig->withTags($config->get("tags-$definitionEnvironment"));
+    }
+
+    $containerConfig = $containerConfig->withDefinitions(
+        array_merge($containerConfig->getDefinitions(), [ConfigInterface::class => $config])
+    );
+
+    return new Container($containerConfig);
+}
+```
+At the beginning, an array of definitions for the container is initialized
+
+Example definitions:
+```php
+return [
+EngineInterface::class => EngineMarkOne::class,
+    'full_definition' => [
+        'class' => EngineMarkOne::class,
+        '__construct()' => [42],
+        '$propertyName' => 'value',
+        'setX()' => [42],
+    ],
+    'closure' => fn (SomeFactory $factory) => $factory->create('args'),
+    'static_call_preferred' => fn () => MyFactory::create('args'),
+    'static_call_supported' => [MyFactory::class, 'create'],
+    'object' => new MyClass(),
+];
+```
+Next, the array of providers is initialized
+```php
+return [
+    CarFactoryProvider::class,
+    GarageFactoryProvider::class,
+]
+```
+Example provider: 
+```php
+use Yiisoft\Di\Container;
+use Yiisoft\Di\ServiceProviderInterface;
+
+class CarFactoryProvider extends ServiceProviderInterface
+{
+    public function getDefinitions(): array
+    {
+        return [
+            CarFactory::class => [
+                'class' => CarFactory::class,
+                '$color' => 'red',
+            ], 
+            EngineInterface::class => SolarEngine::class,
+            WheelInterface::class => [
+                'class' => Wheel::class,
+                '$color' => 'black',
+            ],
+            CarInterface::class => [
+                'class' => BMW::class,
+                '$model' => 'X5',
+            ],
+        ];    
+    }
+     
+    public function getExtensions(): array
+    {
+        return [
+            // Note that Garage should already be defined in container 
+            Garage::class => function(ContainerInterface $container, Garage $garage) {
+                $car = $container
+                    ->get(CarFactory::class)
+                    ->create();
+                $garage->setCar($car);
+                
+                return $garage;
+            }
+        ];
+    } 
+}
+```
+Then, an array of delegate containers is initialized, in which it is possible to get definitions
+if definitions were not found in the main container.
+
+To configure delegates, use an additional config:
+```php
+use Yiisoft\Di\Container;
+use Yiisoft\Di\ContainerConfig;
+
+$config = ContainerConfig::create()
+    ->withDelegates([
+        function (ContainerInterface $container): ContainerInterface {
+            // ...
+        }
+    ]);
+
+
+$container = new Container($config);
+```
+
+Finally, an array of definition tags is initialized:
+
+```php
+Example of creating a tag definition
+```
+
+For more information on creating container definitions, see [DI container](https://github.com/yiisoft/di)
+
 ## Testing
 
 ### Unit testing
