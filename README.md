@@ -52,19 +52,91 @@ require_once __DIR__ . '/autoload.php';
 (new HttpApplicationRunner(__DIR__, $_ENV['YII_DEBUG'], $_ENV['YII_ENV']))->run();
 ```
 
+## ApplicationRunner creates config and default dependency injection container
+
+### Create configs
+
+In the ```parent abstract class ApplicationRunner``` of the adapters creates environment configs
+for one of the ```development```, ```production``` or ```other``` environments you create
+
+
 ```php 
+<?php
+
+declare(strict_types=1);
+
 abstract class ApplicationRunner {
     protected function createDefaultConfig(): Config
     {
         return ConfigFactory::create(new ConfigPaths($this->rootPath, 'config'), $this->environment);
     }
 }
+
 ```
 
-In the ```parent abstract class ApplicationRunner``` of the adapters creates environment configs for one of the development, production,
-test, or other environments you create
+Builds configs [package configs](https://github.com/yiisoft/config), the package supports the creation of
+```environments``` and ```groups``` of configs
 
-Then creates default dependency injection container
+
+#### Config groups
+
+You can also set up config groups for the ```web``` or ```console```
+
+```json
+"extra": {
+    "config-plugin": {
+        "params": [
+            "params.php",
+            "?params-local.php"
+        ],
+        "common": "common.php",
+        "web": [
+            "$common",
+            "web.php",
+            "../src/Modules/*/config/web.php"
+        ],
+        "console": [
+            "$common",
+            "console.php",
+        ]
+    }
+}
+```
+
+#### Config environment
+
+The config package supports setting up environments such as ```development``` or ```production```
+
+```json
+"extra": {
+    "config-plugin-options": {
+        "source-directory": "config"
+    },
+    "config-plugin": {
+        "params": "params.php",
+        "web": "web.php"
+    },
+    "config-plugin-environments": {
+        "dev": {
+            "params": "dev/params.php",
+            "app": [
+                "$web",
+                "dev/app.php"
+            ]
+        },
+        "prod": {
+            "app": "prod/app.php"
+        }
+    }
+}
+```
+
+Learn more about setting up and building configs in [Config package](https://github.com/yiisoft/config)
+
+## DI container
+
+After creating the configuration, ApplicationRunner creates a default dependency injection container,
+a ```group``` of configs from the configured ```environment``` is added to the container.
 
 ```php
 protected function createDefaultContainer(ConfigInterface $config, string $definitionEnvironment): Container
@@ -99,7 +171,7 @@ At the beginning, an array of definitions for the container is initialized
 Example definitions:
 ```php
 return [
-EngineInterface::class => EngineMarkOne::class,
+    EngineInterface::class => EngineMarkOne::class,
     'full_definition' => [
         'class' => EngineMarkOne::class,
         '__construct()' => [42],
@@ -112,7 +184,9 @@ EngineInterface::class => EngineMarkOne::class,
     'object' => new MyClass(),
 ];
 ```
+
 Next, the array of providers is initialized
+
 ```php
 return [
     CarFactoryProvider::class,
@@ -165,6 +239,7 @@ Then, an array of delegate containers is initialized, in which it is possible to
 if definitions were not found in the main container.
 
 To configure delegates, use an additional config:
+
 ```php
 use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;
@@ -183,7 +258,10 @@ $container = new Container($config);
 Finally, an array of definition tags is initialized:
 
 ```php
-Example of creating a tag definition
+return [
+    'command-services' => [ CreateUser::class, DeleteUser::class ]
+    'query-services' => [ GetAllUsers::class, GetUser::class ]
+]
 ```
 
 For more information on creating container definitions, see [DI container](https://github.com/yiisoft/di)
