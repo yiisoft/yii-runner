@@ -22,9 +22,6 @@ use Yiisoft\Yii\Event\ListenerConfigurationChecker;
  */
 abstract class ApplicationRunner implements RunnerInterface
 {
-    protected bool $debug;
-    protected string $rootPath;
-    protected ?string $environment;
     protected ?ConfigInterface $config = null;
     protected ?ContainerInterface $container = null;
     protected ?string $bootstrapGroup = null;
@@ -35,11 +32,8 @@ abstract class ApplicationRunner implements RunnerInterface
      * @param bool $debug Whether the debug mode is enabled.
      * @param string|null $environment The environment name.
      */
-    public function __construct(string $rootPath, bool $debug, ?string $environment)
+    public function __construct(protected string $rootPath, protected bool $debug, protected ?string $environment)
     {
-        $this->rootPath = $rootPath;
-        $this->debug = $debug;
-        $this->environment = $environment;
     }
 
     abstract public function run(): void;
@@ -48,8 +42,6 @@ abstract class ApplicationRunner implements RunnerInterface
      * Returns a new instance with the specified bootstrap configuration group name.
      *
      * @param string $bootstrapGroup The bootstrap configuration group name.
-     *
-     * @return static
      */
     public function withBootstrap(string $bootstrapGroup): static
     {
@@ -60,8 +52,6 @@ abstract class ApplicationRunner implements RunnerInterface
 
     /**
      * Returns a new instance with bootstrapping disabled.
-     *
-     * @return static
      */
     public function withoutBootstrap(): static
     {
@@ -76,8 +66,6 @@ abstract class ApplicationRunner implements RunnerInterface
      * Note: The configuration of events is checked in debug mode only.
      *
      * @param string $eventsGroup Name of event configuration group to check.
-     *
-     * @return static
      */
     public function withCheckingEvents(string $eventsGroup): static
     {
@@ -88,8 +76,6 @@ abstract class ApplicationRunner implements RunnerInterface
 
     /**
      * Returns a new instance with disabled event configuration check.
-     *
-     * @return static
      */
     public function withoutCheckingEvents(): static
     {
@@ -102,8 +88,6 @@ abstract class ApplicationRunner implements RunnerInterface
      * Returns a new instance with the specified config instance {@see ConfigInterface}.
      *
      * @param ConfigInterface $config The config instance.
-     *
-     * @return static
      */
     public function withConfig(ConfigInterface $config): static
     {
@@ -116,8 +100,6 @@ abstract class ApplicationRunner implements RunnerInterface
      * Returns a new instance with the specified container instance {@see ContainerInterface}.
      *
      * @param ContainerInterface $container The container instance.
-     *
-     * @return static
      */
     public function withContainer(ContainerInterface $container): static
     {
