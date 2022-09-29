@@ -16,13 +16,8 @@ use function sprintf;
  */
 final class BootstrapRunner implements RunnerInterface
 {
-    private ContainerInterface $container;
-    private array $bootstrapList;
-
-    public function __construct(ContainerInterface $container, array $bootstrapList = [])
+    public function __construct(private ContainerInterface $container, private array $bootstrapList = [])
     {
-        $this->container = $container;
-        $this->bootstrapList = $bootstrapList;
     }
 
     /**
