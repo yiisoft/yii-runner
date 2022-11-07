@@ -27,7 +27,7 @@ process easier.
 The package could be installed with composer:
 
 ```shell
-composer require yiisoft/yii-runner --prefer-dist
+composer require yiisoft/yii-runner
 ```
 
 ## General usage
