@@ -1,6 +1,6 @@
 # Yii Runner Change Log
 
-## 1.2.1 under development
+## 1.2.1 November 07, 2022
 
 - Enh #26: Add support for `yiisoft/definitions` version `^3.0` (@vjik)
 
