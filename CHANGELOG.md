@@ -2,7 +2,7 @@
 
 ## 1.2.1 under development
 
-- Enh: Add composer require checker into CI
+- Enh #26: Add support for `yiisoft/definitions` version `^3.0` (@vjik)
 
 ## 1.2.0 July 29, 2022
 
