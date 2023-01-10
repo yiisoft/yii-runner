@@ -50,7 +50,7 @@ final class ApplicationRunnerTest extends TestCase
     {
         $runner = new ApplicationRunner();
         $config = $runner->getConfig();
-        $container = $runner->getContainer($config, 'web');
+        $container = $runner->getContainer();
         $stdClass = $container->get(stdClass::class);
 
         $this->assertSame('John', $stdClass->name);
@@ -83,7 +83,7 @@ final class ApplicationRunnerTest extends TestCase
         $container = $this->createContainer();
         $runner = (new ApplicationRunner())->withContainer($container);
 
-        $this->assertSame($container, $runner->getContainer($this->createConfig(), 'web'));
+        $this->assertSame($container, $runner->getContainer());
     }
 
     public function testGetContainerAndWithNotYiiContainer(): void
@@ -102,7 +102,7 @@ final class ApplicationRunnerTest extends TestCase
 
         $runner = (new ApplicationRunner())->withContainer($container);
 
-        $this->assertSame($container, $runner->getContainer($this->createConfig(), 'web'));
+        $this->assertSame($container, $runner->getContainer());
     }
 
     public function testTags(): void
@@ -131,7 +131,7 @@ final class ApplicationRunnerTest extends TestCase
     {
         $runner = (new ApplicationRunner())->withCheckingEvents('events-fail');
         $config = $runner->getConfig();
-        $container = $runner->getContainer($config, 'web');
+        $container = $runner->getContainer();
 
         $this->expectException(InvalidListenerConfigurationException::class);
 
