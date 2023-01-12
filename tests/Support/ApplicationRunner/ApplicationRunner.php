@@ -24,12 +24,12 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
         $this->checkEvents($config, $container);
     }
 
-    public function runBootstrap(ConfigInterface $config, ContainerInterface $container): void
+    public function runBootstrap(ConfigInterface $config = null, ContainerInterface $container = null): void
     {
         parent::runBootstrap($config, $container);
     }
 
-    public function checkEvents(ConfigInterface $config, ContainerInterface $container): void
+    public function checkEvents(ConfigInterface $config = null, ContainerInterface $container = null): void
     {
         parent::checkEvents($config, $container);
     }
