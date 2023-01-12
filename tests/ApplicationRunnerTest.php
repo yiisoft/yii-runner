@@ -124,7 +124,7 @@ final class ApplicationRunnerTest extends TestCase
 
         $this->expectOutputString('Bootstrapping');
 
-        $runner->runBootstrap($this->createConfig(), $this->createContainer());
+        $runner->runBootstrap();
     }
 
     public function testCheckEvents(): void
@@ -135,7 +135,7 @@ final class ApplicationRunnerTest extends TestCase
 
         $this->expectException(InvalidListenerConfigurationException::class);
 
-        $runner->checkEvents($config, $container);
+        $runner->checkEvents();
     }
 
     public function testRun(): void

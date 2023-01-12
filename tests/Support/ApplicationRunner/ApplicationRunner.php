@@ -20,8 +20,8 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
     {
         $config = $this->getConfig();
         $container = $this->getContainer();
-        $this->runBootstrap($config, $container);
-        $this->checkEvents($config, $container);
+        $this->runBootstrap();
+        $this->checkEvents();
     }
 
     public function runBootstrap(): void
