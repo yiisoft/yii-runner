@@ -116,23 +116,23 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ErrorException|RuntimeException
      */
-    protected function runBootstrap(ConfigInterface $config, ContainerInterface $container): void
+    protected function runBootstrap(): void
     {
         if ($this->bootstrapGroup !== null) {
-            (new BootstrapRunner($container, $config->get($this->bootstrapGroup)))->run();
+            (new BootstrapRunner($this->getContainer(), $this->getConfig()->get($this->bootstrapGroup)))->run();
         }
     }
 
     /**
      * @throws ContainerExceptionInterface|ErrorException|NotFoundExceptionInterface
      */
-    protected function checkEvents(ConfigInterface $config, ContainerInterface $container): void
+    protected function checkEvents(): void
     {
         if ($this->debug && $this->eventsGroup !== null) {
             /** @psalm-suppress MixedMethodCall */
-            $container
+            $this->getContainer()
                 ->get(ListenerConfigurationChecker::class)
-                ->check($config->get($this->eventsGroup));
+                ->check($this->getConfig()->get($this->eventsGroup));
         }
     }
 

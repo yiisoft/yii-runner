@@ -20,18 +20,18 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
     {
         $config = $this->getConfig();
         $container = $this->getContainer();
-        $this->runBootstrap($config, $container);
-        $this->checkEvents($config, $container);
+        $this->runBootstrap();
+        $this->checkEvents();
     }
 
-    public function runBootstrap(ConfigInterface $config, ContainerInterface $container): void
+    public function runBootstrap(): void
     {
-        parent::runBootstrap($config, $container);
+        parent::runBootstrap();
     }
 
-    public function checkEvents(ConfigInterface $config, ContainerInterface $container): void
+    public function checkEvents(): void
     {
-        parent::checkEvents($config, $container);
+        parent::checkEvents();
     }
 
     public function getConfig(): ConfigInterface

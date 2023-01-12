@@ -2,6 +2,8 @@
 
 ## 2.0.0 under development
 
+- Сhg #37: Remove parameters in `ApplicationRunner` methods `runBootstrap()` and `checkEvents()`, instead are used 
+  internal container and config instances (@vjik) 
 - Chg #36: Add ability to configure container configuration group (@vjik)
 
 ## 1.2.1 November 07, 2022
