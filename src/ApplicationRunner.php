@@ -30,10 +30,15 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @param string $rootPath The absolute path to the project root.
      * @param bool $debug Whether the debug mode is enabled.
+     * @param string $containerConfigGroup The container configuration group name.
      * @param string|null $environment The environment name.
      */
-    public function __construct(protected string $rootPath, protected bool $debug, protected ?string $environment)
-    {
+    public function __construct(
+        protected string $rootPath,
+        protected bool $debug,
+        protected string $containerConfigGroup,
+        protected ?string $environment
+    ) {
     }
 
     abstract public function run(): void;
@@ -142,9 +147,9 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ErrorException|InvalidConfigException
      */
-    protected function getContainer(ConfigInterface $config, string $definitionEnvironment): ContainerInterface
+    protected function getContainer(): ContainerInterface
     {
-        $this->container ??= $this->createDefaultContainer($config, $definitionEnvironment);
+        $this->container ??= $this->createDefaultContainer($this->getConfig(), $this->containerConfigGroup);
 
         if ($this->container instanceof Container) {
             return $this->container->get(ContainerInterface::class);
