@@ -1,8 +1,8 @@
 # Yii Runner Change Log
 
-## 1.2.2 under development
+## 2.0.0 under development
 
-- no changes in this release.
+- Chg #36: Add ability to configure container configuration group (@vjik)
 
 ## 1.2.1 November 07, 2022
 

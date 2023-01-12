@@ -13,13 +13,13 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
 {
     public function __construct()
     {
-        parent::__construct(__DIR__, true, null);
+        parent::__construct(__DIR__, true, 'web', null);
     }
 
     public function run(): void
     {
         $config = $this->getConfig();
-        $container = $this->getContainer($config, 'web');
+        $container = $this->getContainer();
         $this->runBootstrap($config, $container);
         $this->checkEvents($config, $container);
     }
@@ -39,9 +39,9 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
         return parent::getConfig();
     }
 
-    public function getContainer(ConfigInterface $config, string $definitionEnvironment): ContainerInterface
+    public function getContainer(): ContainerInterface
     {
-        return parent::getContainer($config, $definitionEnvironment);
+        return parent::getContainer();
     }
 
     public function createDefaultConfig(): Config
