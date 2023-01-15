@@ -13,13 +13,11 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
 {
     public function __construct()
     {
-        parent::__construct(__DIR__, true, 'web', null);
+        parent::__construct(__DIR__, true, 'params', 'web', null);
     }
 
     public function run(): void
     {
-        $config = $this->getConfig();
-        $container = $this->getContainer();
         $this->runBootstrap();
         $this->checkEvents();
     }
