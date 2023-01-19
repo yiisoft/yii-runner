@@ -62,13 +62,13 @@ final class ApplicationRunnerTest extends TestCase
         $runner = new ApplicationRunner();
         $config = $runner->getConfig();
 
-        $container = $runner->createDefaultContainer($config, 'web');
+        $container = $runner->createDefaultContainer();
         $stdClass = $container->get(stdClass::class);
 
         $this->assertSame('John', $stdClass->name);
         $this->assertSame(42, $stdClass->age);
 
-        $container2 = $runner->createDefaultContainer($config, 'web');
+        $container2 = $runner->createDefaultContainer();
         $stdClass2 = $container2->get(stdClass::class);
 
         $this->assertNotSame($container, $container2);
