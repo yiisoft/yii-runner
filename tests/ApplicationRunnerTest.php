@@ -110,9 +110,9 @@ final class ApplicationRunnerTest extends TestCase
         $runner = new ApplicationRunner();
         $config = $runner->getConfig();
 
-        $this->assertTrue($config->has('tags-web'));
+        $this->assertTrue($config->has('di-tags-web'));
 
-        $container = $runner->createDefaultContainer($config, 'web');
+        $container = $runner->createDefaultContainer();
         $repositories = $container->get('tag@repositories');
 
         $this->assertEquals([new Repository()], $repositories);
@@ -120,7 +120,7 @@ final class ApplicationRunnerTest extends TestCase
 
     public function testRunBootstrap(): void
     {
-        $runner = (new ApplicationRunner())->withBootstrap('bootstrap-web');
+        $runner = new ApplicationRunner('web');
 
         $this->expectOutputString('Bootstrapping');
 
@@ -129,9 +129,7 @@ final class ApplicationRunnerTest extends TestCase
 
     public function testCheckEvents(): void
     {
-        $runner = (new ApplicationRunner())->withCheckingEvents('events-fail');
-        $config = $runner->getConfig();
-        $container = $runner->getContainer();
+        $runner = new ApplicationRunner('fail');
 
         $this->expectException(InvalidListenerConfigurationException::class);
 
@@ -141,39 +139,29 @@ final class ApplicationRunnerTest extends TestCase
     public function testRun(): void
     {
         $this->expectOutputString('');
-        (new ApplicationRunner())->run();
+        (new ApplicationRunner(null))->run();
     }
 
     public function testRunWithoutBootstrapAndCheckEvents(): void
     {
         $this->expectOutputString('');
-        (new ApplicationRunner())
-            ->withoutBootstrap()
-            ->withoutCheckingEvents()
-            ->run();
+        (new ApplicationRunner(useBootstrap: false, checkEvents: false))->run();
     }
 
     public function testRunWithSetters(): void
     {
         $this->expectOutputString('Bootstrapping');
 
-        (new ApplicationRunner())
-            ->withCheckingEvents('events-web')
-            ->withBootstrap('bootstrap-web')
+        (new ApplicationRunner('web'))
             ->withContainer($this->createContainer())
             ->withConfig($this->createConfig())
-            ->run()
-        ;
+            ->run();
     }
 
     public function testImmutability(): void
     {
         $runner = new ApplicationRunner();
 
-        $this->assertNotSame($runner, $runner->withBootstrap('bootstrap-web'));
-        $this->assertNotSame($runner, $runner->withoutBootstrap());
-        $this->assertNotSame($runner, $runner->withCheckingEvents('events-web'));
-        $this->assertNotSame($runner, $runner->withoutCheckingEvents());
         $this->assertNotSame($runner, $runner->withConfig($this->createConfig()));
         $this->assertNotSame($runner, $runner->withContainer($this->createContainer()));
     }

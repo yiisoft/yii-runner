@@ -10,9 +10,9 @@ return [
                 'params.php',
             ],
         ],
-        'web' => [
+        'di-web' => [
             '/' => [
-                'web.php',
+                'di-web.php',
             ],
         ],
         'events-web' => [
@@ -25,14 +25,14 @@ return [
                 'events-fail.php',
             ],
         ],
-        'providers-web' => [
+        'di-providers-web' => [
             '/' => [
-                'providers-web.php',
+                'di-providers-web.php',
             ],
         ],
-        'delegates-web' => [
+        'di-delegates-web' => [
             '/' => [
-                'delegates-web.php',
+                'di-delegates-web.php',
             ],
         ],
         'bootstrap-web' => [
@@ -40,9 +40,9 @@ return [
                 'bootstrap-web.php',
             ],
         ],
-        'tags-web' => [
+        'di-tags-web' => [
             '/' => [
-                'tags-web.php',
+                'di-tags-web.php',
             ],
         ],
     ],

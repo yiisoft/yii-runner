@@ -18,18 +18,20 @@ final class ConfigFactory
     /**
      * @throws ErrorException If the environment does not exist.
      */
-    public static function create(ConfigPaths $paths, ?string $environment, string $paramsGroup = 'params'): Config
-    {
+    public static function create(
+        ConfigPaths $paths,
+        ?string $environment,
+        ?string $configGroupPostfix = null,
+    ): Config {
         $paramsGroups = ['params'];
-        if ($paramsGroup !== 'params') {
-            $paramsGroups[] = $paramsGroup;
+        if ($configGroupPostfix !== null) {
+            $paramsGroups[] = 'params-'.$configGroupPostfix;
         }
 
-        $eventGroups = [
-            'events',
-            'events-web',
-            'events-console',
-        ];
+        $eventGroups = ['events'];
+        if ($configGroupPostfix !== null) {
+            $eventGroups[] = 'events-'.$configGroupPostfix;
+        }
 
         return new Config(
             $paths,
@@ -38,7 +40,7 @@ final class ConfigFactory
                 ReverseMerge::groups(...$eventGroups),
                 RecursiveMerge::groups(...$paramsGroups, ...$eventGroups),
             ],
-            $paramsGroup,
+            'params',
         );
     }
 }

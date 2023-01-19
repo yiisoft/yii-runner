@@ -11,9 +11,13 @@ use Yiisoft\Di\Container;
 
 final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
 {
-    public function __construct()
+    public function __construct(
+        ?string $configGroupNamePostfix = 'web',
+        bool $useBootstrap = true,
+        bool $checkEvents = true,
+    )
     {
-        parent::__construct(__DIR__, true, 'params', 'web', null);
+        parent::__construct(__DIR__, true, $useBootstrap, $checkEvents, $configGroupNamePostfix, null);
     }
 
     public function run(): void
@@ -47,8 +51,8 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
         return parent::createDefaultConfig();
     }
 
-    public function createDefaultContainer(ConfigInterface $config, string $definitionEnvironment): Container
+    public function createDefaultContainer(): Container
     {
-        return parent::createDefaultContainer($config, $definitionEnvironment);
+        return parent::createDefaultContainer();
     }
 }

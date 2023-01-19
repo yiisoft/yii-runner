@@ -22,74 +22,26 @@ use Yiisoft\Yii\Event\ListenerConfigurationChecker;
  */
 abstract class ApplicationRunner implements RunnerInterface
 {
-    protected ?ConfigInterface $config = null;
-    protected ?ContainerInterface $container = null;
-    protected ?string $bootstrapGroup = null;
-    protected ?string $eventsGroup = null;
+    private ?ConfigInterface $config = null;
+    private ?ContainerInterface $container = null;
 
     /**
      * @param string $rootPath The absolute path to the project root.
      * @param bool $debug Whether the debug mode is enabled.
-     * @param string $paramsConfigGroup The config parameters group name.
-     * @param string $containerConfigGroup The container configuration group name.
+     * @param string|null $configGroupPostfix A configuration groups postfix.
      * @param string|null $environment The environment name.
      */
     public function __construct(
         protected string $rootPath,
         protected bool $debug,
-        protected string $paramsConfigGroup,
-        protected string $containerConfigGroup,
-        protected ?string $environment
+        protected bool $useBootstrap,
+        protected bool $checkEvents,
+        protected ?string $configGroupPostfix,
+        protected ?string $environment,
     ) {
     }
 
     abstract public function run(): void;
-
-    /**
-     * Returns a new instance with the specified bootstrap configuration group name.
-     *
-     * @param string $bootstrapGroup The bootstrap configuration group name.
-     */
-    public function withBootstrap(string $bootstrapGroup): static
-    {
-        $new = clone $this;
-        $new->bootstrapGroup = $bootstrapGroup;
-        return $new;
-    }
-
-    /**
-     * Returns a new instance with bootstrapping disabled.
-     */
-    public function withoutBootstrap(): static
-    {
-        $new = clone $this;
-        $new->bootstrapGroup = null;
-        return $new;
-    }
-
-    /**
-     * Returns a new instance with the specified name of event configuration group to check.
-     *
-     * Note: The configuration of events is checked in debug mode only.
-     *
-     * @param string $eventsGroup Name of event configuration group to check.
-     */
-    public function withCheckingEvents(string $eventsGroup): static
-    {
-        $new = clone $this;
-        $new->eventsGroup = $eventsGroup;
-        return $new;
-    }
-
-    /**
-     * Returns a new instance with disabled event configuration check.
-     */
-    public function withoutCheckingEvents(): static
-    {
-        $new = clone $this;
-        $new->eventsGroup = null;
-        return $new;
-    }
 
     /**
      * Returns a new instance with the specified config instance {@see ConfigInterface}.
@@ -120,8 +72,11 @@ abstract class ApplicationRunner implements RunnerInterface
      */
     protected function runBootstrap(): void
     {
-        if ($this->bootstrapGroup !== null) {
-            (new BootstrapRunner($this->getContainer(), $this->getConfig()->get($this->bootstrapGroup)))->run();
+        if ($this->useBootstrap) {
+            $bootstrapList = $this->getConfiguration('bootstrap');
+            if ($bootstrapList !== null) {
+                (new BootstrapRunner($this->getContainer(), $bootstrapList))->run();
+            }
         }
     }
 
@@ -130,11 +85,14 @@ abstract class ApplicationRunner implements RunnerInterface
      */
     protected function checkEvents(): void
     {
-        if ($this->debug && $this->eventsGroup !== null) {
-            /** @psalm-suppress MixedMethodCall */
-            $this->getContainer()
-                ->get(ListenerConfigurationChecker::class)
-                ->check($this->getConfig()->get($this->eventsGroup));
+        if ($this->debug && $this->checkEvents) {
+            $configuration = $this->getConfiguration('events');
+            if ($configuration !== null) {
+                /** @psalm-suppress MixedMethodCall */
+                $this->getContainer()
+                    ->get(ListenerConfigurationChecker::class)
+                    ->check($configuration);
+            }
         }
     }
 
@@ -151,7 +109,7 @@ abstract class ApplicationRunner implements RunnerInterface
      */
     protected function getContainer(): ContainerInterface
     {
-        $this->container ??= $this->createDefaultContainer($this->getConfig(), $this->containerConfigGroup);
+        $this->container ??= $this->createDefaultContainer();
 
         if ($this->container instanceof Container) {
             return $this->container->get(ContainerInterface::class);
@@ -168,31 +126,33 @@ abstract class ApplicationRunner implements RunnerInterface
         return ConfigFactory::create(
             new ConfigPaths($this->rootPath, 'config'),
             $this->environment,
-            $this->paramsConfigGroup,
+            $this->configGroupPostfix,
         );
     }
 
     /**
      * @throws ErrorException|InvalidConfigException
      */
-    protected function createDefaultContainer(ConfigInterface $config, string $definitionEnvironment): Container
+    protected function createDefaultContainer(): Container
     {
         $containerConfig = ContainerConfig::create()->withValidate($this->debug);
 
-        if ($config->has($definitionEnvironment)) {
-            $containerConfig = $containerConfig->withDefinitions($config->get($definitionEnvironment));
+        $config = $this->getConfig();
+
+        if (null !== $definitions = $this->getConfiguration('di')) {
+            $containerConfig = $containerConfig->withDefinitions($definitions);
         }
 
-        if ($config->has("providers-$definitionEnvironment")) {
-            $containerConfig = $containerConfig->withProviders($config->get("providers-$definitionEnvironment"));
+        if (null !== $providers = $this->getConfiguration('di-providers')) {
+            $containerConfig = $containerConfig->withProviders($providers);
         }
 
-        if ($config->has("delegates-$definitionEnvironment")) {
-            $containerConfig = $containerConfig->withDelegates($config->get("delegates-$definitionEnvironment"));
+        if (null !== $delegates = $this->getConfiguration('di-delegates')) {
+            $containerConfig = $containerConfig->withDelegates($delegates);
         }
 
-        if ($config->has("tags-$definitionEnvironment")) {
-            $containerConfig = $containerConfig->withTags($config->get("tags-$definitionEnvironment"));
+        if (null !== $tags = $this->getConfiguration('di-tags')) {
+            $containerConfig = $containerConfig->withTags($tags);
         }
 
         $containerConfig = $containerConfig->withDefinitions(
@@ -200,5 +160,23 @@ abstract class ApplicationRunner implements RunnerInterface
         );
 
         return new Container($containerConfig);
+    }
+
+    final protected function getConfiguration(string $name): ?array
+    {
+        $config = $this->getConfig();
+
+        if ($this->configGroupPostfix !== null) {
+            $fullName = $name . '-' . $this->configGroupPostfix;
+            if ($config->has($fullName)) {
+                return $config->get($fullName);
+            }
+        }
+
+        if ($config->has($name)) {
+            return $config->get($name);
+        }
+
+        return null;
     }
 }
