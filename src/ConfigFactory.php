@@ -25,12 +25,12 @@ final class ConfigFactory
     ): Config {
         $paramsGroups = ['params'];
         if ($configGroupPostfix !== null) {
-            $paramsGroups[] = 'params-'.$configGroupPostfix;
+            $paramsGroups[] = 'params-' . $configGroupPostfix;
         }
 
         $eventGroups = ['events'];
         if ($configGroupPostfix !== null) {
-            $eventGroups[] = 'events-'.$configGroupPostfix;
+            $eventGroups[] = 'events-' . $configGroupPostfix;
         }
 
         return new Config(

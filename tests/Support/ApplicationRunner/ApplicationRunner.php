@@ -15,8 +15,7 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
         ?string $configGroupNamePostfix = 'web',
         bool $useBootstrap = true,
         bool $checkEvents = true,
-    )
-    {
+    ) {
         parent::__construct(__DIR__, true, $useBootstrap, $checkEvents, $configGroupNamePostfix, null);
     }
 

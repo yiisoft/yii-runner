@@ -25,7 +25,7 @@ final class ConfigFactoryTest extends TestCase
                     ],
                 ],
                 null,
-                'events'
+                'events',
             ],
             [
                 [
@@ -40,7 +40,7 @@ final class ConfigFactoryTest extends TestCase
                     ],
                 ],
                 'console',
-                'events-console'
+                'events-console',
             ],
             [
                 [
@@ -55,7 +55,7 @@ final class ConfigFactoryTest extends TestCase
                     ],
                 ],
                 'web',
-                'events-web'
+                'events-web',
             ],
         ];
     }
