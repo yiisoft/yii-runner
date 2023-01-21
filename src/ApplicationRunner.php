@@ -84,7 +84,7 @@ abstract class ApplicationRunner implements RunnerInterface
     final protected function runBootstrap(): void
     {
         $bootstrapList = $this->getConfiguration($this->bootstrapGroup);
-        if ($bootstrapList === null) {
+        if (empty($bootstrapList)) {
             return;
         }
 
@@ -96,14 +96,15 @@ abstract class ApplicationRunner implements RunnerInterface
      */
     final protected function checkEvents(): void
     {
-        if ($this->debug && $this->checkEvents) {
-            $configuration = $this->getConfiguration($this->eventsGroup);
-            if ($configuration !== null) {
-                /** @psalm-suppress MixedMethodCall */
-                $this->getContainer()
-                    ->get(ListenerConfigurationChecker::class)
-                    ->check($configuration);
-            }
+        if (
+            $this->debug
+            && $this->checkEvents
+            && null !== $configuration = $this->getConfiguration($this->eventsGroup)
+        ) {
+            /** @psalm-suppress MixedMethodCall */
+            $this->getContainer()
+                ->get(ListenerConfigurationChecker::class)
+                ->check($configuration);
         }
     }
 
@@ -127,6 +128,12 @@ abstract class ApplicationRunner implements RunnerInterface
         }
 
         return $this->container;
+    }
+
+    final protected function getConfiguration(string $name): ?array
+    {
+        $config = $this->getConfig();
+        return $config->has($name) ? $config->get($name) : null;
     }
 
     /**
@@ -178,11 +185,5 @@ abstract class ApplicationRunner implements RunnerInterface
         );
 
         return new Container($containerConfig);
-    }
-
-    final protected function getConfiguration(string $name): ?array
-    {
-        $config = $this->getConfig();
-        return $config->has($name) ? $config->get($name) : null;
     }
 }
