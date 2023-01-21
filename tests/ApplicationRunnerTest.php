@@ -142,12 +142,6 @@ final class ApplicationRunnerTest extends TestCase
         (new ApplicationRunner(null))->run();
     }
 
-    public function testRunWithoutBootstrapAndCheckEvents(): void
-    {
-        $this->expectOutputString('');
-        (new ApplicationRunner(useBootstrap: false, checkEvents: false))->run();
-    }
-
     public function testRunWithSetters(): void
     {
         $this->expectOutputString('Bootstrapping');

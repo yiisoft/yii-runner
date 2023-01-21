@@ -5,8 +5,9 @@
 - Сhg #37: Remove parameters in `ApplicationRunner` methods `runBootstrap()` and `checkEvents()`, instead are used 
   internal container and config instances (@vjik) 
 - Chg #39: Adapt to Yii configuration groups names convention (@vjik)
-- Chg #39: Add parameters `$useBootstrap`, `$checkEvents` and `$configGroupPostfix` to `ApplicationRunner` constructor
-  and removed methods `withBootstrap()`, `withoutBootstrap()`, `withCheckingEvents()`, `withoutCheckingEvents()` (@vjik) 
+- Chg #39: Remove methods `withBootstrap()`, `withoutBootstrap()`, `withCheckingEvents()`, `withoutCheckingEvents()` 
+  from `ApplicationRunner` (@vjik) 
+- New #39: Add parameters `$checkEvents` and `$configGroupPostfix` to `ApplicationRunner` constructor (@vjik) 
 
 ## 1.2.1 November 07, 2022
 

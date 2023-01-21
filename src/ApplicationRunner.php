@@ -34,7 +34,6 @@ abstract class ApplicationRunner implements RunnerInterface
     public function __construct(
         protected string $rootPath,
         protected bool $debug,
-        protected bool $useBootstrap,
         protected bool $checkEvents,
         protected ?string $configGroupPostfix,
         protected ?string $environment,
@@ -72,12 +71,12 @@ abstract class ApplicationRunner implements RunnerInterface
      */
     protected function runBootstrap(): void
     {
-        if ($this->useBootstrap) {
-            $bootstrapList = $this->getConfiguration('bootstrap');
-            if ($bootstrapList !== null) {
-                (new BootstrapRunner($this->getContainer(), $bootstrapList))->run();
-            }
+        $bootstrapList = $this->getConfiguration('bootstrap');
+        if ($bootstrapList === null) {
+            return;
         }
+
+        (new BootstrapRunner($this->getContainer(), $bootstrapList))->run();
     }
 
     /**
