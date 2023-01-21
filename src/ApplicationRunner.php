@@ -12,6 +12,8 @@ use RuntimeException;
 use Yiisoft\Config\Config;
 use Yiisoft\Config\ConfigInterface;
 use Yiisoft\Config\ConfigPaths;
+use Yiisoft\Config\Modifier\RecursiveMerge;
+use Yiisoft\Config\Modifier\ReverseMerge;
 use Yiisoft\Definitions\Exception\InvalidConfigException;
 use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;
@@ -28,15 +30,25 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @param string $rootPath The absolute path to the project root.
      * @param bool $debug Whether the debug mode is enabled.
-     * @param string|null $configGroupPostfix A configuration groups postfix.
      * @param string|null $environment The environment name.
+     *
+     * @psalm-param list<string> $nestedParamsGroups
+     * @psalm-param list<string> $nestedEventsGroups
      */
     public function __construct(
         protected string $rootPath,
         protected bool $debug,
         protected bool $checkEvents,
-        protected ?string $configGroupPostfix,
         protected ?string $environment,
+        protected string $bootstrapGroup,
+        protected string $eventsGroup,
+        protected string $diGroup,
+        protected string $diProvidersGroup,
+        protected string $diDelegatesGroup,
+        protected string $diTagsGroup,
+        protected string $paramsGroup,
+        protected array $nestedParamsGroups,
+        protected array $nestedEventsGroups,
     ) {
     }
 
@@ -71,7 +83,7 @@ abstract class ApplicationRunner implements RunnerInterface
      */
     protected function runBootstrap(): void
     {
-        $bootstrapList = $this->getConfiguration('bootstrap');
+        $bootstrapList = $this->getConfiguration($this->bootstrapGroup);
         if ($bootstrapList === null) {
             return;
         }
@@ -85,7 +97,7 @@ abstract class ApplicationRunner implements RunnerInterface
     protected function checkEvents(): void
     {
         if ($this->debug && $this->checkEvents) {
-            $configuration = $this->getConfiguration('events');
+            $configuration = $this->getConfiguration($this->eventsGroup);
             if ($configuration !== null) {
                 /** @psalm-suppress MixedMethodCall */
                 $this->getContainer()
@@ -122,10 +134,17 @@ abstract class ApplicationRunner implements RunnerInterface
      */
     protected function createDefaultConfig(): Config
     {
-        return ConfigFactory::create(
+        $paramsGroups = [$this->paramsGroup, ...$this->nestedParamsGroups];
+        $eventsGroups = [$this->eventsGroup, ...$this->nestedEventsGroups];
+
+        return new Config(
             new ConfigPaths($this->rootPath, 'config'),
             $this->environment,
-            $this->configGroupPostfix,
+            [
+                ReverseMerge::groups(...$eventsGroups),
+                RecursiveMerge::groups(...$paramsGroups, ...$eventsGroups),
+            ],
+            $this->paramsGroup,
         );
     }
 
@@ -138,19 +157,19 @@ abstract class ApplicationRunner implements RunnerInterface
 
         $config = $this->getConfig();
 
-        if (null !== $definitions = $this->getConfiguration('di')) {
+        if (null !== $definitions = $this->getConfiguration($this->diGroup)) {
             $containerConfig = $containerConfig->withDefinitions($definitions);
         }
 
-        if (null !== $providers = $this->getConfiguration('di-providers')) {
+        if (null !== $providers = $this->getConfiguration($this->diProvidersGroup)) {
             $containerConfig = $containerConfig->withProviders($providers);
         }
 
-        if (null !== $delegates = $this->getConfiguration('di-delegates')) {
+        if (null !== $delegates = $this->getConfiguration($this->diDelegatesGroup)) {
             $containerConfig = $containerConfig->withDelegates($delegates);
         }
 
-        if (null !== $tags = $this->getConfiguration('di-tags')) {
+        if (null !== $tags = $this->getConfiguration($this->diTagsGroup)) {
             $containerConfig = $containerConfig->withTags($tags);
         }
 
@@ -164,18 +183,6 @@ abstract class ApplicationRunner implements RunnerInterface
     final protected function getConfiguration(string $name): ?array
     {
         $config = $this->getConfig();
-
-        if ($this->configGroupPostfix !== null) {
-            $fullName = $name . '-' . $this->configGroupPostfix;
-            if ($config->has($fullName)) {
-                return $config->get($fullName);
-            }
-        }
-
-        if ($config->has($name)) {
-            return $config->get($name);
-        }
-
-        return null;
+        return $config->has($name) ? $config->get($name) : null;
     }
 }

@@ -7,7 +7,9 @@
 - Chg #39: Adapt to Yii configuration groups names convention (@vjik)
 - Chg #39: Remove methods `withBootstrap()`, `withoutBootstrap()`, `withCheckingEvents()`, `withoutCheckingEvents()` 
   from `ApplicationRunner` (@vjik) 
-- New #39: Add parameters `$checkEvents` and `$configGroupPostfix` to `ApplicationRunner` constructor (@vjik) 
+- New #38, #39: Add ability to configure all config group names (@vjik)
+- New #39: Add parameter `$checkEvents` to `ApplicationRunner` constructor (@vjik)
+- Chg #39: Remove `ConfigFactory`, instead it move code to `ApplicationRunner::createDefaultConfig()` method (@vjik)
 
 ## 1.2.1 November 07, 2022
 

@@ -12,10 +12,24 @@ use Yiisoft\Di\Container;
 final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
 {
     public function __construct(
-        ?string $configGroupNamePostfix = 'web',
         bool $checkEvents = true,
+        string $eventsGroup = 'events-web',
     ) {
-        parent::__construct(__DIR__, true, $checkEvents, $configGroupNamePostfix, null);
+        parent::__construct(
+            rootPath: __DIR__,
+            debug: true,
+            checkEvents: $checkEvents,
+            environment: null,
+            bootstrapGroup: 'bootstrap-web',
+            eventsGroup: $eventsGroup,
+            diGroup: 'di-web',
+            diProvidersGroup: 'di-providers-web',
+            diDelegatesGroup: 'di-delegates-web',
+            diTagsGroup: 'di-tags-web',
+            paramsGroup: 'params',
+            nestedParamsGroups: [],
+            nestedEventsGroups: ['events'],
+        );
     }
 
     public function run(): void
