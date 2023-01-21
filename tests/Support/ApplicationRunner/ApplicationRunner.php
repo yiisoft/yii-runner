@@ -6,8 +6,6 @@ namespace Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner;
 
 use Psr\Container\ContainerInterface;
 use Yiisoft\Config\Config;
-use Yiisoft\Config\ConfigInterface;
-use Yiisoft\Di\Container;
 
 final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
 {
@@ -38,33 +36,23 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
         $this->checkEvents();
     }
 
-    public function runBootstrap(): void
+    public function doCheckEvents(): void
     {
-        parent::runBootstrap();
+        $this->checkEvents();
     }
 
-    public function checkEvents(): void
+    public function doRunBootstrap(): void
     {
-        parent::checkEvents();
+        $this->runBootstrap();
     }
 
-    public function getConfig(): ConfigInterface
+    public function getRunnerConfig(): Config
     {
-        return parent::getConfig();
+        return $this->getConfig();
     }
 
-    public function getContainer(): ContainerInterface
+    public function getRunnerContainer(): ContainerInterface
     {
-        return parent::getContainer();
-    }
-
-    public function createDefaultConfig(): Config
-    {
-        return parent::createDefaultConfig();
-    }
-
-    public function createDefaultContainer(): Container
-    {
-        return parent::createDefaultContainer();
+        return $this->getContainer();
     }
 }

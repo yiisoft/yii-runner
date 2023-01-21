@@ -20,22 +20,9 @@ final class ApplicationRunnerTest extends TestCase
     public function testGetConfig(): void
     {
         $runner = new ApplicationRunner();
-        $config = $runner->getConfig();
+        $config = $runner->getRunnerConfig();
 
         $this->assertSame(['name' => 'John', 'age' => 42], $config->get('params'));
-    }
-
-    public function testCreateDefaultConfig(): void
-    {
-        $runner = new ApplicationRunner();
-        $config = $runner->createDefaultConfig();
-
-        $this->assertSame(['name' => 'John', 'age' => 42], $config->get('params'));
-
-        $config2 = $runner->createDefaultConfig();
-
-        $this->assertNotSame($config, $config2);
-        $this->assertSame(['name' => 'John', 'age' => 42], $config2->get('params'));
     }
 
     public function testGetConfigAndWithConfig(): void
@@ -43,39 +30,17 @@ final class ApplicationRunnerTest extends TestCase
         $config = $this->createConfig();
         $runner = (new ApplicationRunner())->withConfig($config);
 
-        $this->assertSame($config, $runner->getConfig());
+        $this->assertSame($config, $runner->getRunnerConfig());
     }
 
     public function testGetContainer(): void
     {
         $runner = new ApplicationRunner();
-        $config = $runner->getConfig();
-        $container = $runner->getContainer();
+        $container = $runner->getRunnerContainer();
         $stdClass = $container->get(stdClass::class);
 
         $this->assertSame('John', $stdClass->name);
         $this->assertSame(42, $stdClass->age);
-    }
-
-    public function testCreateDefaultContainer(): void
-    {
-        $runner = new ApplicationRunner();
-        $config = $runner->getConfig();
-
-        $container = $runner->createDefaultContainer();
-        $stdClass = $container->get(stdClass::class);
-
-        $this->assertSame('John', $stdClass->name);
-        $this->assertSame(42, $stdClass->age);
-
-        $container2 = $runner->createDefaultContainer();
-        $stdClass2 = $container2->get(stdClass::class);
-
-        $this->assertNotSame($container, $container2);
-        $this->assertNotSame($stdClass, $stdClass2);
-
-        $this->assertSame('John', $stdClass2->name);
-        $this->assertSame(42, $stdClass2->age);
     }
 
     public function testGetContainerAndWithContainer(): void
@@ -83,7 +48,7 @@ final class ApplicationRunnerTest extends TestCase
         $container = $this->createContainer();
         $runner = (new ApplicationRunner())->withContainer($container);
 
-        $this->assertSame($container, $runner->getContainer());
+        $this->assertSame($container, $runner->getRunnerContainer());
     }
 
     public function testGetContainerAndWithNotYiiContainer(): void
@@ -102,17 +67,17 @@ final class ApplicationRunnerTest extends TestCase
 
         $runner = (new ApplicationRunner())->withContainer($container);
 
-        $this->assertSame($container, $runner->getContainer());
+        $this->assertSame($container, $runner->getRunnerContainer());
     }
 
     public function testTags(): void
     {
         $runner = new ApplicationRunner();
-        $config = $runner->getConfig();
+        $config = $runner->getRunnerConfig();
 
         $this->assertTrue($config->has('di-tags-web'));
 
-        $container = $runner->createDefaultContainer();
+        $container = $runner->getRunnerContainer();
         $repositories = $container->get('tag@repositories');
 
         $this->assertEquals([new Repository()], $repositories);
@@ -124,7 +89,7 @@ final class ApplicationRunnerTest extends TestCase
 
         $this->expectOutputString('Bootstrapping');
 
-        $runner->runBootstrap();
+        $runner->doRunBootstrap();
     }
 
     public function testCheckEvents(): void
@@ -133,7 +98,7 @@ final class ApplicationRunnerTest extends TestCase
 
         $this->expectException(InvalidListenerConfigurationException::class);
 
-        $runner->checkEvents();
+        $runner->doCheckEvents();
     }
 
     public function testRun(): void

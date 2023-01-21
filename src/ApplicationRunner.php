@@ -59,7 +59,7 @@ abstract class ApplicationRunner implements RunnerInterface
      *
      * @param ConfigInterface $config The config instance.
      */
-    public function withConfig(ConfigInterface $config): static
+    final public function withConfig(ConfigInterface $config): static
     {
         $new = clone $this;
         $new->config = $config;
@@ -71,7 +71,7 @@ abstract class ApplicationRunner implements RunnerInterface
      *
      * @param ContainerInterface $container The container instance.
      */
-    public function withContainer(ContainerInterface $container): static
+    final public function withContainer(ContainerInterface $container): static
     {
         $new = clone $this;
         $new->container = $container;
@@ -81,7 +81,7 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ErrorException|RuntimeException
      */
-    protected function runBootstrap(): void
+    final protected function runBootstrap(): void
     {
         $bootstrapList = $this->getConfiguration($this->bootstrapGroup);
         if ($bootstrapList === null) {
@@ -94,7 +94,7 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ContainerExceptionInterface|ErrorException|NotFoundExceptionInterface
      */
-    protected function checkEvents(): void
+    final protected function checkEvents(): void
     {
         if ($this->debug && $this->checkEvents) {
             $configuration = $this->getConfiguration($this->eventsGroup);
@@ -110,7 +110,7 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ErrorException
      */
-    protected function getConfig(): ConfigInterface
+    final protected function getConfig(): ConfigInterface
     {
         return $this->config ??= $this->createDefaultConfig();
     }
@@ -118,7 +118,7 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ErrorException|InvalidConfigException
      */
-    protected function getContainer(): ContainerInterface
+    final protected function getContainer(): ContainerInterface
     {
         $this->container ??= $this->createDefaultContainer();
 
@@ -132,7 +132,7 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ErrorException
      */
-    protected function createDefaultConfig(): Config
+    private function createDefaultConfig(): Config
     {
         $paramsGroups = [$this->paramsGroup, ...$this->nestedParamsGroups];
         $eventsGroups = [$this->eventsGroup, ...$this->nestedEventsGroups];
@@ -151,7 +151,7 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ErrorException|InvalidConfigException
      */
-    protected function createDefaultContainer(): Container
+    private function createDefaultContainer(): Container
     {
         $containerConfig = ContainerConfig::create()->withValidate($this->debug);
 
