@@ -31,9 +31,10 @@ final class BootstrapRunner implements RunnerInterface
             if (!is_callable($callback)) {
                 throw new RuntimeException(
                     sprintf(
-                    'Bootstrap callback must be callable, "%s" given.',
-                    get_debug_type($callback),
-                ));
+                        'Bootstrap callback must be callable, "%s" given.',
+                        get_debug_type($callback),
+                    )
+                );
             }
 
             $callback($this->container);
