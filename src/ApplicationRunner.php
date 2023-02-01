@@ -30,7 +30,19 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @param string $rootPath The absolute path to the project root.
      * @param bool $debug Whether the debug mode is enabled.
+     * @param bool $checkEvents Whether check events' configuration.
      * @param string|null $environment The environment name.
+     * @param string $bootstrapGroup The bootstrap configuration group name.
+     * @param string $eventsGroup The events' configuration group name.
+     * @param string $diGroup The container definitions' configuration group name.
+     * @param string $diProvidersGroup The container providers' configuration group name.
+     * @param string $diDelegatesGroup The container delegates' configuration group name.
+     * @param string $diTagsGroup The container tags' configuration group name.
+     * @param string $paramsGroup The config parameters group name.
+     * @param array $nestedParamsGroups Configuration group names that included to config parameters group. This is
+     * needed for recursive merge parameters.
+     * @param array $nestedEventsGroups Configuration group names that included to events' configuration group. This is
+     * needed for reverse and recursive merge events' configurations.
      *
      * @psalm-param list<string> $nestedParamsGroups
      * @psalm-param list<string> $nestedEventsGroups
