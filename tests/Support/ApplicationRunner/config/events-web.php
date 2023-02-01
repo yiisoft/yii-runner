@@ -2,4 +2,8 @@
 
 declare(strict_types=1);
 
-return [];
+use Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner\Support\EventC;
+
+return [
+    EventC::class => [],
+];

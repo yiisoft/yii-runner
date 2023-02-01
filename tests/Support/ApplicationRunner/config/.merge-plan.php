@@ -8,6 +8,7 @@ return [
         'params' => [
             '/' => [
                 'params.php',
+                'params-more.php',
             ],
         ],
         'di-web' => [
@@ -15,8 +16,20 @@ return [
                 'di-web.php',
             ],
         ],
+        'events' => [
+            '/' => [
+                'events.php',
+            ],
+        ],
+        'events-more' => [
+            '/' => [
+                '$events',
+                'events-more.php',
+            ],
+        ],
         'events-web' => [
             '/' => [
+                '$events-more',
                 'events-web.php',
             ],
         ],

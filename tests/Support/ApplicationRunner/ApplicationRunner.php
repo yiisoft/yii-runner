@@ -26,7 +26,7 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
             diTagsGroup: 'di-tags-web',
             paramsGroup: 'params',
             nestedParamsGroups: [],
-            nestedEventsGroups: ['events'],
+            nestedEventsGroups: ['events', 'events-more'],
         );
     }
 
