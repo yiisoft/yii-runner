@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 return [
     'name' => [
-        'last' => 'Smith'
+        'last' => 'Smith',
     ],
 ];

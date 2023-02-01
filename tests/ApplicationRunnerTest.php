@@ -11,7 +11,6 @@ use Yiisoft\Config\Config;
 use Yiisoft\Config\ConfigInterface;
 use Yiisoft\Config\ConfigPaths;
 use Yiisoft\Config\Modifier\RecursiveMerge;
-use Yiisoft\Config\Modifier\ReverseMerge;
 use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;
 use Yiisoft\Yii\Event\InvalidListenerConfigurationException;
