@@ -122,7 +122,7 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ErrorException
      */
-    final protected function getConfig(): ConfigInterface
+    final public function getConfig(): ConfigInterface
     {
         return $this->config ??= $this->createDefaultConfig();
     }
@@ -130,7 +130,7 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ErrorException|InvalidConfigException
      */
-    final protected function getContainer(): ContainerInterface
+    final public function getContainer(): ContainerInterface
     {
         $this->container ??= $this->createDefaultContainer();
 
