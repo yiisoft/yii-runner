@@ -109,8 +109,7 @@ abstract class ApplicationRunner implements RunnerInterface
     final protected function checkEvents(): void
     {
         if (
-            $this->debug
-            && $this->checkEvents
+            $this->checkEvents
             && null !== $configuration = $this->getConfiguration($this->eventsGroup)
         ) {
             /** @psalm-suppress MixedMethodCall */
