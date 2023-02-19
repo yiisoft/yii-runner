@@ -6,16 +6,16 @@
 
 ## 2.0.0 February 19, 2023
 
+- New #38, #39: Add ability to configure all config group names (@vjik)
+- New #39: Add parameter `$checkEvents` to `ApplicationRunner` constructor (@vjik)
 - Chg #39: Adapt to Yii configuration groups names convention (@vjik)
 - Chg #39: Remove `ConfigFactory`, instead it move code to `ApplicationRunner::createDefaultConfig()` method (@vjik)
 - Chg #39: Remove methods `withBootstrap()`, `withoutBootstrap()`, `withCheckingEvents()`, `withoutCheckingEvents()` 
   from `ApplicationRunner` (@vjik)
 - Chg #41: Raise `yiisoft/definitions` required version to `^2.0` (@vjik)
-- Enh #39: Make methods `ApplicationRunner::getConfig()` and `ApplicationRunner::getContainer()` public (@vjik)
-- New #38, #39: Add ability to configure all config group names (@vjik)
-- New #39: Add parameter `$checkEvents` to `ApplicationRunner` constructor (@vjik)
 - Сhg #37: Remove parameters in `ApplicationRunner` methods `runBootstrap()` and `checkEvents()`, instead are used 
   internal container and config instances (@vjik)
+- Enh #39: Make methods `ApplicationRunner::getConfig()` and `ApplicationRunner::getContainer()` public (@vjik)
 
 ## 1.2.1 November 07, 2022
 
