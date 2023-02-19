@@ -16,8 +16,10 @@ use function sprintf;
  */
 final class BootstrapRunner implements RunnerInterface
 {
-    public function __construct(private ContainerInterface $container, private array $bootstrapList = [])
-    {
+    public function __construct(
+        private ContainerInterface $container,
+        private array $bootstrapList = [],
+    ) {
     }
 
     /**
@@ -27,10 +29,12 @@ final class BootstrapRunner implements RunnerInterface
     {
         foreach ($this->bootstrapList as $callback) {
             if (!is_callable($callback)) {
-                throw new RuntimeException(sprintf(
-                    'Bootstrap callback must be callable, "%s" given.',
-                    get_debug_type($callback),
-                ));
+                throw new RuntimeException(
+                    sprintf(
+                        'Bootstrap callback must be callable, "%s" given.',
+                        get_debug_type($callback),
+                    )
+                );
             }
 
             $callback($this->container);

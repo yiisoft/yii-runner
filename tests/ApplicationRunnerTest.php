@@ -8,11 +8,16 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
 use Yiisoft\Config\Config;
+use Yiisoft\Config\ConfigInterface;
 use Yiisoft\Config\ConfigPaths;
+use Yiisoft\Config\Modifier\RecursiveMerge;
 use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;
 use Yiisoft\Yii\Event\InvalidListenerConfigurationException;
 use Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner\ApplicationRunner;
+use Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner\Support\EventA;
+use Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner\Support\EventB;
+use Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner\Support\EventC;
 use Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner\Support\Repository;
 
 final class ApplicationRunnerTest extends TestCase
@@ -20,22 +25,18 @@ final class ApplicationRunnerTest extends TestCase
     public function testGetConfig(): void
     {
         $runner = new ApplicationRunner();
-        $config = $runner->getConfig();
+        $config = $runner->getRunnerConfig();
 
-        $this->assertSame(['name' => 'John', 'age' => 42], $config->get('params'));
-    }
-
-    public function testCreateDefaultConfig(): void
-    {
-        $runner = new ApplicationRunner();
-        $config = $runner->createDefaultConfig();
-
-        $this->assertSame(['name' => 'John', 'age' => 42], $config->get('params'));
-
-        $config2 = $runner->createDefaultConfig();
-
-        $this->assertNotSame($config, $config2);
-        $this->assertSame(['name' => 'John', 'age' => 42], $config2->get('params'));
+        $this->assertSame(
+            [
+                'name' => [
+                    'first' => 'John',
+                    'last' => 'Smith',
+                ],
+                'age' => 42,
+            ],
+            $config->get('params')
+        );
     }
 
     public function testGetConfigAndWithConfig(): void
@@ -43,39 +44,17 @@ final class ApplicationRunnerTest extends TestCase
         $config = $this->createConfig();
         $runner = (new ApplicationRunner())->withConfig($config);
 
-        $this->assertSame($config, $runner->getConfig());
+        $this->assertSame($config, $runner->getRunnerConfig());
     }
 
     public function testGetContainer(): void
     {
         $runner = new ApplicationRunner();
-        $config = $runner->getConfig();
-        $container = $runner->getContainer();
+        $container = $runner->getRunnerContainer();
         $stdClass = $container->get(stdClass::class);
 
-        $this->assertSame('John', $stdClass->name);
+        $this->assertSame(['first' => 'John', 'last' => 'Smith'], $stdClass->name);
         $this->assertSame(42, $stdClass->age);
-    }
-
-    public function testCreateDefaultContainer(): void
-    {
-        $runner = new ApplicationRunner();
-        $config = $runner->getConfig();
-
-        $container = $runner->createDefaultContainer($config, 'web');
-        $stdClass = $container->get(stdClass::class);
-
-        $this->assertSame('John', $stdClass->name);
-        $this->assertSame(42, $stdClass->age);
-
-        $container2 = $runner->createDefaultContainer($config, 'web');
-        $stdClass2 = $container2->get(stdClass::class);
-
-        $this->assertNotSame($container, $container2);
-        $this->assertNotSame($stdClass, $stdClass2);
-
-        $this->assertSame('John', $stdClass2->name);
-        $this->assertSame(42, $stdClass2->age);
     }
 
     public function testGetContainerAndWithContainer(): void
@@ -83,7 +62,7 @@ final class ApplicationRunnerTest extends TestCase
         $container = $this->createContainer();
         $runner = (new ApplicationRunner())->withContainer($container);
 
-        $this->assertSame($container, $runner->getContainer());
+        $this->assertSame($container, $runner->getRunnerContainer());
     }
 
     public function testGetContainerAndWithNotYiiContainer(): void
@@ -102,17 +81,17 @@ final class ApplicationRunnerTest extends TestCase
 
         $runner = (new ApplicationRunner())->withContainer($container);
 
-        $this->assertSame($container, $runner->getContainer());
+        $this->assertSame($container, $runner->getRunnerContainer());
     }
 
     public function testTags(): void
     {
         $runner = new ApplicationRunner();
-        $config = $runner->getConfig();
+        $config = $runner->getRunnerConfig();
 
-        $this->assertTrue($config->has('tags-web'));
+        $this->assertTrue($config->has('di-tags-web'));
 
-        $container = $runner->createDefaultContainer($config, 'web');
+        $container = $runner->getRunnerContainer();
         $repositories = $container->get('tag@repositories');
 
         $this->assertEquals([new Repository()], $repositories);
@@ -120,37 +99,34 @@ final class ApplicationRunnerTest extends TestCase
 
     public function testRunBootstrap(): void
     {
-        $runner = (new ApplicationRunner())->withBootstrap('bootstrap-web');
+        $runner = new ApplicationRunner();
 
         $this->expectOutputString('Bootstrapping');
 
-        $runner->runBootstrap();
+        $runner->doRunBootstrap();
     }
 
     public function testCheckEvents(): void
     {
-        $runner = (new ApplicationRunner())->withCheckingEvents('events-fail');
-        $config = $runner->getConfig();
-        $container = $runner->getContainer();
+        $runner = new ApplicationRunner(eventsGroup: 'events-fail');
 
         $this->expectException(InvalidListenerConfigurationException::class);
 
-        $runner->checkEvents();
+        $runner->doCheckEvents();
+    }
+
+    public function testNotCheckEvents(): void
+    {
+        $runner = new ApplicationRunner(checkEvents: false, eventsGroup: 'events-fail');
+
+        $this->expectNotToPerformAssertions();
+        $runner->doCheckEvents();
     }
 
     public function testRun(): void
     {
-        $this->expectOutputString('');
+        $this->expectOutputString('Bootstrapping');
         (new ApplicationRunner())->run();
-    }
-
-    public function testRunWithoutBootstrapAndCheckEvents(): void
-    {
-        $this->expectOutputString('');
-        (new ApplicationRunner())
-            ->withoutBootstrap()
-            ->withoutCheckingEvents()
-            ->run();
     }
 
     public function testRunWithSetters(): void
@@ -158,29 +134,50 @@ final class ApplicationRunnerTest extends TestCase
         $this->expectOutputString('Bootstrapping');
 
         (new ApplicationRunner())
-            ->withCheckingEvents('events-web')
-            ->withBootstrap('bootstrap-web')
             ->withContainer($this->createContainer())
             ->withConfig($this->createConfig())
-            ->run()
-        ;
+            ->run();
+    }
+
+    public function testGetConfigFromContainer(): void
+    {
+        $config = $this->createConfig();
+
+        $runner = (new ApplicationRunner())->withConfig($config);
+
+        $this->assertSame($config, $runner->getRunnerContainer()->get(ConfigInterface::class));
+    }
+
+    public function testEvents(): void
+    {
+        $events = (new ApplicationRunner())->getRunnerConfig()->get('events-web');
+
+        $this->assertSame(
+            [
+                EventC::class => [],
+                EventB::class => [],
+                EventA::class => [],
+            ],
+            $events
+        );
     }
 
     public function testImmutability(): void
     {
         $runner = new ApplicationRunner();
 
-        $this->assertNotSame($runner, $runner->withBootstrap('bootstrap-web'));
-        $this->assertNotSame($runner, $runner->withoutBootstrap());
-        $this->assertNotSame($runner, $runner->withCheckingEvents('events-web'));
-        $this->assertNotSame($runner, $runner->withoutCheckingEvents());
         $this->assertNotSame($runner, $runner->withConfig($this->createConfig()));
         $this->assertNotSame($runner, $runner->withContainer($this->createContainer()));
     }
 
     private function createConfig(): Config
     {
-        return new Config(new ConfigPaths(__DIR__ . '/Support/ApplicationRunner', 'config'));
+        return new Config(
+            paths: new ConfigPaths(__DIR__ . '/Support/ApplicationRunner', 'config'),
+            modifiers: [
+                RecursiveMerge::groups('params'),
+            ],
+        );
     }
 
     private function createContainer(): Container

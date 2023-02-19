@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 return [
-    'name' => 'John',
+    'name' => [
+        'first' => 'John',
+    ],
     'age' => 42,
 ];

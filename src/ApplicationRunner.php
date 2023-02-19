@@ -12,6 +12,8 @@ use RuntimeException;
 use Yiisoft\Config\Config;
 use Yiisoft\Config\ConfigInterface;
 use Yiisoft\Config\ConfigPaths;
+use Yiisoft\Config\Modifier\RecursiveMerge;
+use Yiisoft\Config\Modifier\ReverseMerge;
 use Yiisoft\Definitions\Exception\InvalidConfigException;
 use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;
@@ -22,81 +24,54 @@ use Yiisoft\Yii\Event\ListenerConfigurationChecker;
  */
 abstract class ApplicationRunner implements RunnerInterface
 {
-    protected ?ConfigInterface $config = null;
-    protected ?ContainerInterface $container = null;
-    protected ?string $bootstrapGroup = null;
-    protected ?string $eventsGroup = null;
+    private ?ConfigInterface $config = null;
+    private ?ContainerInterface $container = null;
 
     /**
      * @param string $rootPath The absolute path to the project root.
      * @param bool $debug Whether the debug mode is enabled.
-     * @param string $paramsConfigGroup The config parameters group name.
-     * @param string $containerConfigGroup The container configuration group name.
+     * @param bool $checkEvents Whether to check events' configuration.
      * @param string|null $environment The environment name.
+     * @param string $bootstrapGroup The bootstrap configuration group name.
+     * @param string $eventsGroup The events' configuration group name.
+     * @param string $diGroup The container definitions' configuration group name.
+     * @param string $diProvidersGroup The container providers' configuration group name.
+     * @param string $diDelegatesGroup The container delegates' configuration group name.
+     * @param string $diTagsGroup The container tags' configuration group name.
+     * @param string $paramsGroup The configuration parameters group name.
+     * @param array $nestedParamsGroups Configuration group names that are included into configuration parameters group.
+     * This is needed for recursive merging of parameters.
+     * @param array $nestedEventsGroups Configuration group names that are included into events' configuration group.
+     * This is needed for reverse and recursive merge of events' configurations.
+     *
+     * @psalm-param list<string> $nestedParamsGroups
+     * @psalm-param list<string> $nestedEventsGroups
      */
     public function __construct(
         protected string $rootPath,
         protected bool $debug,
-        protected string $paramsConfigGroup,
-        protected string $containerConfigGroup,
-        protected ?string $environment
+        protected bool $checkEvents,
+        protected ?string $environment,
+        protected string $bootstrapGroup,
+        protected string $eventsGroup,
+        protected string $diGroup,
+        protected string $diProvidersGroup,
+        protected string $diDelegatesGroup,
+        protected string $diTagsGroup,
+        protected string $paramsGroup,
+        protected array $nestedParamsGroups,
+        protected array $nestedEventsGroups,
     ) {
     }
 
     abstract public function run(): void;
 
     /**
-     * Returns a new instance with the specified bootstrap configuration group name.
-     *
-     * @param string $bootstrapGroup The bootstrap configuration group name.
-     */
-    public function withBootstrap(string $bootstrapGroup): static
-    {
-        $new = clone $this;
-        $new->bootstrapGroup = $bootstrapGroup;
-        return $new;
-    }
-
-    /**
-     * Returns a new instance with bootstrapping disabled.
-     */
-    public function withoutBootstrap(): static
-    {
-        $new = clone $this;
-        $new->bootstrapGroup = null;
-        return $new;
-    }
-
-    /**
-     * Returns a new instance with the specified name of event configuration group to check.
-     *
-     * Note: The configuration of events is checked in debug mode only.
-     *
-     * @param string $eventsGroup Name of event configuration group to check.
-     */
-    public function withCheckingEvents(string $eventsGroup): static
-    {
-        $new = clone $this;
-        $new->eventsGroup = $eventsGroup;
-        return $new;
-    }
-
-    /**
-     * Returns a new instance with disabled event configuration check.
-     */
-    public function withoutCheckingEvents(): static
-    {
-        $new = clone $this;
-        $new->eventsGroup = null;
-        return $new;
-    }
-
-    /**
      * Returns a new instance with the specified config instance {@see ConfigInterface}.
      *
      * @param ConfigInterface $config The config instance.
      */
-    public function withConfig(ConfigInterface $config): static
+    final public function withConfig(ConfigInterface $config): static
     {
         $new = clone $this;
         $new->config = $config;
@@ -108,7 +83,7 @@ abstract class ApplicationRunner implements RunnerInterface
      *
      * @param ContainerInterface $container The container instance.
      */
-    public function withContainer(ContainerInterface $container): static
+    final public function withContainer(ContainerInterface $container): static
     {
         $new = clone $this;
         $new->container = $container;
@@ -118,30 +93,36 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ErrorException|RuntimeException
      */
-    protected function runBootstrap(): void
+    final protected function runBootstrap(): void
     {
-        if ($this->bootstrapGroup !== null) {
-            (new BootstrapRunner($this->getContainer(), $this->getConfig()->get($this->bootstrapGroup)))->run();
+        $bootstrapList = $this->getConfiguration($this->bootstrapGroup);
+        if (empty($bootstrapList)) {
+            return;
         }
+
+        (new BootstrapRunner($this->getContainer(), $bootstrapList))->run();
     }
 
     /**
      * @throws ContainerExceptionInterface|ErrorException|NotFoundExceptionInterface
      */
-    protected function checkEvents(): void
+    final protected function checkEvents(): void
     {
-        if ($this->debug && $this->eventsGroup !== null) {
+        if (
+            $this->checkEvents
+            && null !== $configuration = $this->getConfiguration($this->eventsGroup)
+        ) {
             /** @psalm-suppress MixedMethodCall */
             $this->getContainer()
                 ->get(ListenerConfigurationChecker::class)
-                ->check($this->getConfig()->get($this->eventsGroup));
+                ->check($configuration);
         }
     }
 
     /**
      * @throws ErrorException
      */
-    protected function getConfig(): ConfigInterface
+    final public function getConfig(): ConfigInterface
     {
         return $this->config ??= $this->createDefaultConfig();
     }
@@ -149,9 +130,9 @@ abstract class ApplicationRunner implements RunnerInterface
     /**
      * @throws ErrorException|InvalidConfigException
      */
-    protected function getContainer(): ContainerInterface
+    final public function getContainer(): ContainerInterface
     {
-        $this->container ??= $this->createDefaultContainer($this->getConfig(), $this->containerConfigGroup);
+        $this->container ??= $this->createDefaultContainer();
 
         if ($this->container instanceof Container) {
             return $this->container->get(ContainerInterface::class);
@@ -160,39 +141,54 @@ abstract class ApplicationRunner implements RunnerInterface
         return $this->container;
     }
 
+    final protected function getConfiguration(string $name): ?array
+    {
+        $config = $this->getConfig();
+        return $config->has($name) ? $config->get($name) : null;
+    }
+
     /**
      * @throws ErrorException
      */
-    protected function createDefaultConfig(): Config
+    private function createDefaultConfig(): Config
     {
-        return ConfigFactory::create(
+        $paramsGroups = [$this->paramsGroup, ...$this->nestedParamsGroups];
+        $eventsGroups = [$this->eventsGroup, ...$this->nestedEventsGroups];
+
+        return new Config(
             new ConfigPaths($this->rootPath, 'config'),
             $this->environment,
-            $this->paramsConfigGroup,
+            [
+                ReverseMerge::groups(...$eventsGroups),
+                RecursiveMerge::groups(...$paramsGroups, ...$eventsGroups),
+            ],
+            $this->paramsGroup,
         );
     }
 
     /**
      * @throws ErrorException|InvalidConfigException
      */
-    protected function createDefaultContainer(ConfigInterface $config, string $definitionEnvironment): Container
+    private function createDefaultContainer(): Container
     {
         $containerConfig = ContainerConfig::create()->withValidate($this->debug);
 
-        if ($config->has($definitionEnvironment)) {
-            $containerConfig = $containerConfig->withDefinitions($config->get($definitionEnvironment));
+        $config = $this->getConfig();
+
+        if (null !== $definitions = $this->getConfiguration($this->diGroup)) {
+            $containerConfig = $containerConfig->withDefinitions($definitions);
         }
 
-        if ($config->has("providers-$definitionEnvironment")) {
-            $containerConfig = $containerConfig->withProviders($config->get("providers-$definitionEnvironment"));
+        if (null !== $providers = $this->getConfiguration($this->diProvidersGroup)) {
+            $containerConfig = $containerConfig->withProviders($providers);
         }
 
-        if ($config->has("delegates-$definitionEnvironment")) {
-            $containerConfig = $containerConfig->withDelegates($config->get("delegates-$definitionEnvironment"));
+        if (null !== $delegates = $this->getConfiguration($this->diDelegatesGroup)) {
+            $containerConfig = $containerConfig->withDelegates($delegates);
         }
 
-        if ($config->has("tags-$definitionEnvironment")) {
-            $containerConfig = $containerConfig->withTags($config->get("tags-$definitionEnvironment"));
+        if (null !== $tags = $this->getConfiguration($this->diTagsGroup)) {
+            $containerConfig = $containerConfig->withTags($tags);
         }
 
         $containerConfig = $containerConfig->withDefinitions(
