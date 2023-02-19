@@ -106,6 +106,13 @@ final class ApplicationRunnerTest extends TestCase
         $runner->doRunBootstrap();
     }
 
+    public function testRunWithNonExistBootstrap(): void
+    {
+        $runner = new ApplicationRunner(bootstrapGroup: 'non-exist');
+        $this->expectOutputString('');
+        $runner->doRunBootstrap();
+    }
+
     public function testCheckEvents(): void
     {
         $runner = new ApplicationRunner(eventsGroup: 'events-fail');

@@ -12,13 +12,14 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
     public function __construct(
         bool $checkEvents = true,
         string $eventsGroup = 'events-web',
+        ?string $bootstrapGroup = 'bootstrap-web',
     ) {
         parent::__construct(
             rootPath: __DIR__,
             debug: true,
             checkEvents: $checkEvents,
             environment: null,
-            bootstrapGroup: 'bootstrap-web',
+            bootstrapGroup: $bootstrapGroup,
             eventsGroup: $eventsGroup,
             diGroup: 'di-web',
             diProvidersGroup: 'di-providers-web',
