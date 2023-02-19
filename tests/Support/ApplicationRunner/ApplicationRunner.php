@@ -6,14 +6,28 @@ namespace Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner;
 
 use Psr\Container\ContainerInterface;
 use Yiisoft\Config\Config;
-use Yiisoft\Config\ConfigInterface;
-use Yiisoft\Di\Container;
 
 final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
 {
-    public function __construct()
-    {
-        parent::__construct(__DIR__, true, 'params', 'web', null);
+    public function __construct(
+        bool $checkEvents = true,
+        string $eventsGroup = 'events-web',
+    ) {
+        parent::__construct(
+            rootPath: __DIR__,
+            debug: true,
+            checkEvents: $checkEvents,
+            environment: null,
+            bootstrapGroup: 'bootstrap-web',
+            eventsGroup: $eventsGroup,
+            diGroup: 'di-web',
+            diProvidersGroup: 'di-providers-web',
+            diDelegatesGroup: 'di-delegates-web',
+            diTagsGroup: 'di-tags-web',
+            paramsGroup: 'params',
+            nestedParamsGroups: [],
+            nestedEventsGroups: ['events', 'events-more'],
+        );
     }
 
     public function run(): void
@@ -22,33 +36,23 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
         $this->checkEvents();
     }
 
-    public function runBootstrap(): void
+    public function doCheckEvents(): void
     {
-        parent::runBootstrap();
+        $this->checkEvents();
     }
 
-    public function checkEvents(): void
+    public function doRunBootstrap(): void
     {
-        parent::checkEvents();
+        $this->runBootstrap();
     }
 
-    public function getConfig(): ConfigInterface
+    public function getRunnerConfig(): Config
     {
-        return parent::getConfig();
+        return $this->getConfig();
     }
 
-    public function getContainer(): ContainerInterface
+    public function getRunnerContainer(): ContainerInterface
     {
-        return parent::getContainer();
-    }
-
-    public function createDefaultConfig(): Config
-    {
-        return parent::createDefaultConfig();
-    }
-
-    public function createDefaultContainer(ConfigInterface $config, string $definitionEnvironment): Container
-    {
-        return parent::createDefaultContainer($config, $definitionEnvironment);
+        return $this->getContainer();
     }
 }
