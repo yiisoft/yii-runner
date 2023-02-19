@@ -11,6 +11,7 @@
 - New #39: Add parameter `$checkEvents` to `ApplicationRunner` constructor (@vjik)
 - Chg #39: Remove `ConfigFactory`, instead it move code to `ApplicationRunner::createDefaultConfig()` method (@vjik)
 - Enh #39: Make methods `ApplicationRunner::getConfig()` and `ApplicationRunner::getContainer()` public (@vjik)
+- Chg #41: Raise `yiisoft/definitions` required version to `^2.0` (@vjik)
 
 ## 1.2.1 November 07, 2022
 
