@@ -12,7 +12,7 @@
 - Chg #39: Remove `ConfigFactory`, instead it move code to `ApplicationRunner::createDefaultConfig()` method (@vjik)
 - Chg #39: Remove methods `withBootstrap()`, `withoutBootstrap()`, `withCheckingEvents()`, `withoutCheckingEvents()` 
   from `ApplicationRunner` (@vjik)
-- Chg #41: Raise `yiisoft/definitions` required version to `^2.0` (@vjik)
+- Chg #41: Raise `yiisoft/yii-event` required version to `^2.0` (@vjik)
 - Сhg #37: Remove parameters in `ApplicationRunner` methods `runBootstrap()` and `checkEvents()`, instead are used 
   internal container and config instances (@vjik)
 - Enh #39: Make methods `ApplicationRunner::getConfig()` and `ApplicationRunner::getContainer()` public (@vjik)
