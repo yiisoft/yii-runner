@@ -43,9 +43,11 @@ abstract class ApplicationRunner implements RunnerInterface
      * This is needed for recursive merging of parameters.
      * @param array $nestedEventsGroups Configuration group names that are included into events' configuration group.
      * This is needed for reverse and recursive merge of events' configurations.
+     * @param object[] $configModifiers Modifiers for {@see Config}.
      *
      * @psalm-param list<string> $nestedParamsGroups
      * @psalm-param list<string> $nestedEventsGroups
+     * @psalm-param list<object> $configModifiers
      */
     public function __construct(
         protected string $rootPath,
@@ -61,6 +63,7 @@ abstract class ApplicationRunner implements RunnerInterface
         protected string $paramsGroup,
         protected array $nestedParamsGroups,
         protected array $nestedEventsGroups,
+        protected array $configModifiers = [],
     ) {
     }
 
@@ -161,6 +164,7 @@ abstract class ApplicationRunner implements RunnerInterface
             [
                 ReverseMerge::groups(...$eventsGroups),
                 RecursiveMerge::groups(...$paramsGroups, ...$eventsGroups),
+                ...$this->configModifiers,
             ],
             $this->paramsGroup,
         );

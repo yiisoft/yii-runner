@@ -169,6 +169,28 @@ final class ApplicationRunnerTest extends TestCase
         );
     }
 
+    public function testConfigModifiers(): void
+    {
+        $runner = new ApplicationRunner(
+            configModifiers: [
+                RecursiveMerge::groups('custom'),
+            ],
+        );
+
+        $config = $runner->getRunnerConfig();
+
+        $this->assertSame(
+            [
+                'a' => [
+                    'b' => 7,
+                    'c' => 8,
+                    'd' => 9,
+                ],
+            ],
+            $config->get('custom')
+        );
+    }
+
     public function testImmutability(): void
     {
         $runner = new ApplicationRunner();
