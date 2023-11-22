@@ -11,6 +11,12 @@ return [
                 'params-more.php',
             ],
         ],
+        'custom' => [
+            '/' => [
+                'custom.php',
+                'custom2.php',
+            ],
+        ],
         'di-web' => [
             '/' => [
                 'di-web.php',

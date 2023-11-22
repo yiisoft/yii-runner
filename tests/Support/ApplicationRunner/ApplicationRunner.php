@@ -13,6 +13,7 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
         bool $checkEvents = true,
         string $eventsGroup = 'events-web',
         ?string $bootstrapGroup = 'bootstrap-web',
+        array $configModifiers = [],
     ) {
         parent::__construct(
             rootPath: __DIR__,
@@ -28,6 +29,7 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
             paramsGroup: 'params',
             nestedParamsGroups: [],
             nestedEventsGroups: ['events', 'events-more'],
+            configModifiers: $configModifiers,
         );
     }
 
