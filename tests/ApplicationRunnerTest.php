@@ -210,6 +210,17 @@ final class ApplicationRunnerTest extends TestCase
         );
     }
 
+    public function testConfigDirectory(): void
+    {
+        $runner = new ApplicationRunner(
+            configDirectory: 'custom-config',
+        );
+
+        $params = $runner->getRunnerConfig()->get('params');
+
+        $this->assertSame(['age' => 19], $params);
+    }
+
     public function testImmutability(): void
     {
         $runner = new ApplicationRunner();

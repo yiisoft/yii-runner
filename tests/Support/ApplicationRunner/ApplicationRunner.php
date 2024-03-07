@@ -14,6 +14,8 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
         string $eventsGroup = 'events-web',
         ?string $bootstrapGroup = 'bootstrap-web',
         array $configModifiers = [],
+        protected string $configDirectory = 'config',
+        protected string $vendorDirectory = 'vendor',
         string $configMergePlanFile = '.merge-plan.php',
     ) {
         parent::__construct(
@@ -31,6 +33,8 @@ final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
             nestedParamsGroups: [],
             nestedEventsGroups: ['events', 'events-more'],
             configModifiers: $configModifiers,
+            configDirectory: $configDirectory,
+            vendorDirectory: $vendorDirectory,
             configMergePlanFile: $configMergePlanFile,
         );
     }
