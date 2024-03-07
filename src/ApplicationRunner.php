@@ -44,7 +44,9 @@ abstract class ApplicationRunner implements RunnerInterface
      * @param array $nestedEventsGroups Configuration group names that are included into events' configuration group.
      * This is needed for reverse and recursive merge of events' configurations.
      * @param object[] $configModifiers Modifiers for {@see Config}.
-     * @param string $configMergePlanFile The merge plan filepath relative to config path.
+     * @param string $configDirectory The relative path from {@see $rootPath} to the configuration storage location.
+     * @param string $vendorDirectory The relative path from {@see $rootPath} to the vendor directory.
+     * @param string $configMergePlanFile The relative path from {@see $configDirectory} to merge plan.
      *
      * @psalm-param list<string> $nestedParamsGroups
      * @psalm-param list<string> $nestedEventsGroups
@@ -65,6 +67,8 @@ abstract class ApplicationRunner implements RunnerInterface
         protected array $nestedParamsGroups,
         protected array $nestedEventsGroups,
         protected array $configModifiers = [],
+        protected string $configDirectory = 'config',
+        protected string $vendorDirectory = 'vendor',
         protected string $configMergePlanFile = '.merge-plan.php',
     ) {
     }
@@ -161,7 +165,7 @@ abstract class ApplicationRunner implements RunnerInterface
         $eventsGroups = [$this->eventsGroup, ...$this->nestedEventsGroups];
 
         return new Config(
-            new ConfigPaths($this->rootPath, 'config'),
+            new ConfigPaths($this->rootPath, $this->configDirectory, $this->vendorDirectory),
             $this->environment,
             [
                 ReverseMerge::groups(...$eventsGroups),
