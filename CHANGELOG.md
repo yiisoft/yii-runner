@@ -1,8 +1,8 @@
 # Yii Runner Change Log
 
-## 2.1.1 under development
+## 2.2.0 under development
 
-- no changes in this release.
+- New #58: Add ability to set custom config merge plan file path, config and vendor directories (@vjik)
 
 ## 2.1.0 December 06, 2023
 

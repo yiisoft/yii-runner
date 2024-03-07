@@ -191,6 +191,36 @@ final class ApplicationRunnerTest extends TestCase
         );
     }
 
+    public function testConfigMergePlanFile(): void
+    {
+        $runner = new ApplicationRunner(
+            configMergePlanFile: 'test-merge-plan.php',
+        );
+
+        $params = $runner->getRunnerConfig()->get('params');
+
+        $this->assertSame(
+            [
+                'name' => [
+                    'first' => 'John',
+                ],
+                'age' => 42,
+            ],
+            $params
+        );
+    }
+
+    public function testConfigDirectory(): void
+    {
+        $runner = new ApplicationRunner(
+            configDirectory: 'custom-config',
+        );
+
+        $params = $runner->getRunnerConfig()->get('params');
+
+        $this->assertSame(['age' => 19], $params);
+    }
+
     public function testImmutability(): void
     {
         $runner = new ApplicationRunner();
