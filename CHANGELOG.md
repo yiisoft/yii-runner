@@ -1,4 +1,4 @@
-# Yii Runner Change Log
+# Yii Application Runner Change Log
 
 ## 2.2.1 under development
 
