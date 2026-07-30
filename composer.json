@@ -35,8 +35,8 @@
         "yiisoft/yii-event": "^2.0"
     },
     "require-dev": {
+        "bamarni/composer-bin-plugin": "^1.8.3",
         "friendsofphp/php-cs-fixer": "^3.95",
-        "maglnet/composer-require-checker": "^4.4",
         "phpunit/phpunit": "^9.6.22",
         "rector/rector": "^2.0.11",
         "roave/infection-static-analysis-plugin": "^1.25",
@@ -61,6 +61,11 @@
         }
     },
     "extra": {
+        "bamarni-bin": {
+            "bin-links": true,
+            "target-directory": "tools",
+            "forward-command": true
+        },
         "config-plugin-options": {
             "build-merge-plan": false
         }
@@ -68,6 +73,7 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
+            "bamarni/composer-bin-plugin": true,
             "infection/extension-installer": true,
             "composer/package-versions-deprecated": true,
             "yiisoft/config": true
