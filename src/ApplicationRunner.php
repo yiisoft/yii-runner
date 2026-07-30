@@ -70,8 +70,7 @@ abstract class ApplicationRunner implements RunnerInterface
         protected string $configDirectory = 'config',
         protected string $vendorDirectory = 'vendor',
         protected string $configMergePlanFile = '.merge-plan.php',
-    ) {
-    }
+    ) {}
 
     abstract public function run(): void;
 
@@ -97,6 +96,28 @@ abstract class ApplicationRunner implements RunnerInterface
         $new = clone $this;
         $new->container = $container;
         return $new;
+    }
+
+    /**
+     * @throws ErrorException
+     */
+    final public function getConfig(): ConfigInterface
+    {
+        return $this->config ??= $this->createDefaultConfig();
+    }
+
+    /**
+     * @throws ErrorException|InvalidConfigException
+     */
+    final public function getContainer(): ContainerInterface
+    {
+        $this->container ??= $this->createDefaultContainer();
+
+        if ($this->container instanceof Container) {
+            return $this->container->get(ContainerInterface::class);
+        }
+
+        return $this->container;
     }
 
     /**
@@ -126,28 +147,6 @@ abstract class ApplicationRunner implements RunnerInterface
                 ->get(ListenerConfigurationChecker::class)
                 ->check($configuration);
         }
-    }
-
-    /**
-     * @throws ErrorException
-     */
-    final public function getConfig(): ConfigInterface
-    {
-        return $this->config ??= $this->createDefaultConfig();
-    }
-
-    /**
-     * @throws ErrorException|InvalidConfigException
-     */
-    final public function getContainer(): ContainerInterface
-    {
-        $this->container ??= $this->createDefaultContainer();
-
-        if ($this->container instanceof Container) {
-            return $this->container->get(ContainerInterface::class);
-        }
-
-        return $this->container;
     }
 
     final protected function getConfiguration(string $name): ?array
@@ -203,7 +202,7 @@ abstract class ApplicationRunner implements RunnerInterface
         }
 
         $containerConfig = $containerConfig->withDefinitions(
-            array_merge($containerConfig->getDefinitions(), [ConfigInterface::class => $config])
+            array_merge($containerConfig->getDefinitions(), [ConfigInterface::class => $config]),
         );
 
         return new Container($containerConfig);

@@ -35,12 +35,14 @@
         "yiisoft/yii-event": "^2.0"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
         "maglnet/composer-require-checker": "^4.4",
         "phpunit/phpunit": "^9.6.22",
         "rector/rector": "^2.0.11",
         "roave/infection-static-analysis-plugin": "^1.25",
         "spatie/phpunit-watcher": "^1.23.6",
         "vimeo/psalm": "^4.30 || ^5.26.1 || ^6.10",
+        "yiisoft/code-style": "^1.1",
         "yiisoft/test-support": "^3.0.2"
     },
     "suggest": {
@@ -73,6 +75,8 @@
     },
     "scripts": {
         "test": "phpunit --testdox --no-interaction",
-        "test-watch": "phpunit-watcher watch"
+        "test-watch": "phpunit-watcher watch",
+        "rector": "rector",
+        "cs-fix": "php-cs-fixer fix"
     }
 }

@@ -19,8 +19,7 @@ final class BootstrapRunner implements RunnerInterface
     public function __construct(
         private ContainerInterface $container,
         private array $bootstrapList = [],
-    ) {
-    }
+    ) {}
 
     /**
      * @throws RuntimeException If the bootstrap callback is not callable.
@@ -33,7 +32,7 @@ final class BootstrapRunner implements RunnerInterface
                     sprintf(
                         'Bootstrap callback must be callable, "%s" given.',
                         get_debug_type($callback),
-                    )
+                    ),
                 );
             }
 
