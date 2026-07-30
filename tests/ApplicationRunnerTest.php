@@ -35,7 +35,7 @@ final class ApplicationRunnerTest extends TestCase
                 ],
                 'age' => 42,
             ],
-            $config->get('params')
+            $config->get('params'),
         );
     }
 
@@ -67,7 +67,7 @@ final class ApplicationRunnerTest extends TestCase
 
     public function testGetContainerAndWithNotYiiContainer(): void
     {
-        $container = new class () implements ContainerInterface {
+        $container = new class implements ContainerInterface {
             public function get(string $id): mixed
             {
                 return null;
@@ -165,7 +165,7 @@ final class ApplicationRunnerTest extends TestCase
                 EventB::class => [],
                 EventA::class => [],
             ],
-            $events
+            $events,
         );
     }
 
@@ -187,7 +187,7 @@ final class ApplicationRunnerTest extends TestCase
                     'd' => 9,
                 ],
             ],
-            $config->get('custom')
+            $config->get('custom'),
         );
     }
 
@@ -206,7 +206,7 @@ final class ApplicationRunnerTest extends TestCase
                 ],
                 'age' => 42,
             ],
-            $params
+            $params,
         );
     }
 
