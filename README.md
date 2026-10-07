@@ -53,6 +53,32 @@ require_once __DIR__ . '/autoload.php';
 ))->run();
 ```
 
+## Configuration
+
+To configure your application, follow the [Yii configuration guide](https://yiisoft.github.io/docs/guide/concept/configuration.html).
+It explains where to put configuration files, register services, and set application parameters.
+
+Choose the configuration environment with the runner's `environment` constructor argument, as shown in the entry
+script above. For example, use `dev` or `prod` if you have defined those environments in your application.
+See [Yii Config environments](https://github.com/yiisoft/config#environments) for how to define them.
+
+For an HTTP application, configure services in these groups:
+
+- `di-web`: define services and their dependencies.
+- `di-providers-web`: register service providers.
+- `di-delegates-web`: register additional containers to look up services in.
+- `di-tags-web`: assign tags to services.
+
+See [Yii DI](https://github.com/yiisoft/di) for configuring services, providers, delegates, and tags, and
+[Yii Definitions](https://github.com/yiisoft/definitions) for supported service definition formats.
+If your application uses different group names, pass them through the runner's `diGroup`, `diProvidersGroup`,
+`diDelegatesGroup`, and `diTagsGroup` constructor arguments. See [Yii Config groups](https://github.com/yiisoft/config#config-groups)
+for how to map group names to configuration files.
+
+To use an existing configuration instance, assign `$runner = $runner->withConfig($config)` before calling `run()`.
+To use your own PSR-11 container, assign `$runner = $runner->withContainer($container)` before calling `run()`.
+Both methods return a new runner instance, so use the returned value for subsequent calls.
+
 ## Documentation
 
 - [Internals](docs/internals.md)
