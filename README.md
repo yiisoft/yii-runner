@@ -55,25 +55,29 @@ require_once __DIR__ . '/autoload.php';
 
 ## Configuration
 
-By default, `ApplicationRunner` uses [Yii Config](https://github.com/yiisoft/config) to load configuration for the
-selected `environment` and creates a [Yii DI container](https://github.com/yiisoft/di). Configuration group names
-are set through the runner's constructor parameters:
+To configure your application, follow the [Yii configuration guide](https://yiisoft.github.io/docs/guide/concept/configuration.html).
+It explains where to put configuration files, register services, and set application parameters.
 
-- `diGroup`: container definitions.
-- `diProvidersGroup`: service providers.
-- `diDelegatesGroup`: delegate containers.
-- `diTagsGroup`: service tags.
+Choose the configuration environment with the runner's `environment` constructor argument, as shown in the entry
+script above. For example, use `dev` or `prod` if you have defined those environments in your application.
+See [Yii Config environments](https://github.com/yiisoft/config#environments) for how to define them.
 
-Adapters provide defaults following the [config groups convention](https://yiisoft.github.io/docs/internals/022-config-groups.html).
-For example, the HTTP runner uses `di-web`, `di-providers-web`, `di-delegates-web`, and `di-tags-web`.
-These groups are separate from environments such as `dev` or `prod`.
+For an HTTP application, configure services in these groups:
 
-See [Yii Config](https://github.com/yiisoft/config#config-groups) for configuration groups and
-[environments](https://github.com/yiisoft/config#environments), [Yii DI](https://github.com/yiisoft/di) for container
-configuration, and [Yii Definitions](https://github.com/yiisoft/definitions) for definition syntax.
+- `di-web`: define services and their dependencies.
+- `di-providers-web`: register service providers.
+- `di-delegates-web`: register additional containers to look up services in.
+- `di-tags-web`: assign tags to services.
 
-To supply your own configuration or PSR-11 container, use `withConfig()` or `withContainer()` respectively.
-Both methods return a new runner instance.
+See [Yii DI](https://github.com/yiisoft/di) for configuring services, providers, delegates, and tags, and
+[Yii Definitions](https://github.com/yiisoft/definitions) for supported service definition formats.
+If your application uses different group names, pass them through the runner's `diGroup`, `diProvidersGroup`,
+`diDelegatesGroup`, and `diTagsGroup` constructor arguments. See [Yii Config groups](https://github.com/yiisoft/config#config-groups)
+for how to map group names to configuration files.
+
+To use an existing configuration instance, assign `$runner = $runner->withConfig($config)` before calling `run()`.
+To use your own PSR-11 container, assign `$runner = $runner->withContainer($container)` before calling `run()`.
+Both methods return a new runner instance, so use the returned value for subsequent calls.
 
 ## Documentation
 
