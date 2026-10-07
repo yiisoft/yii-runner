@@ -35,6 +35,8 @@ Install one of the adapters:
 
 - [Console](https://github.com/yiisoft/yii-runner-console)
 - [HTTP](https://github.com/yiisoft/yii-runner-http)
+- [FrankenPHP](https://github.com/yiisoft/yii-runner-frankenphp)
+- [Rapira](https://github.com/yiisoft/yii-runner-rapira)
 - [RoadRunner](https://github.com/yiisoft/yii-runner-roadrunner)
 
 Instantiate and run it in an entry script:
