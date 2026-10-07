@@ -1,33 +1,32 @@
 <p align="center">
     <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px">
+        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="Yii">
     </a>
-    <h1 align="center">Yii application runner</h1>
+    <h1 align="center">Yii Application Runner</h1>
     <br>
 </p>
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/yii-runner/v/stable.png)](https://packagist.org/packages/yiisoft/yii-runner)
 [![Total Downloads](https://poser.pugx.org/yiisoft/yii-runner/downloads.png)](https://packagist.org/packages/yiisoft/yii-runner)
 [![Build status](https://github.com/yiisoft/yii-runner/workflows/build/badge.svg)](https://github.com/yiisoft/yii-runner/actions?query=workflow%3Abuild)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/yii-runner/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/yii-runner/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/yii-runner/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/yii-runner/?branch=master)
+[![Code Coverage](https://codecov.io/gh/yiisoft/yii-runner/branch/master/graph/badge.svg)](https://codecov.io/gh/yiisoft/yii-runner)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fyii-runner%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/yii-runner/master)
 [![static analysis](https://github.com/yiisoft/yii-runner/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/yii-runner/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/yii-runner/coverage.svg)](https://shepherd.dev/github/yiisoft/yii-runner)
 
-The package defines Yii application runner. A runner hides application initialization details making configuration
+The package defines Yii Application Runner. A runner hides application initialization details making configuration
 process easier.
 
 ## Requirements
 
-- PHP 8.0 or higher.
+- PHP 8.0 - 8.5.
 
 ## Installation
 
-The package could be installed with composer:
+The package could be installed with [Composer](https://getcomposer.org):
 
 ```shell
-composer require yiisoft/yii-runner --prefer-dist
+composer require yiisoft/yii-runner
 ```
 
 ## General usage
@@ -36,266 +35,56 @@ Install one of the adapters:
 
 - [Console](https://github.com/yiisoft/yii-runner-console)
 - [HTTP](https://github.com/yiisoft/yii-runner-http)
+- [FrankenPHP](https://github.com/yiisoft/yii-runner-frankenphp)
+- [Rapira](https://github.com/yiisoft/yii-runner-rapira)
 - [RoadRunner](https://github.com/yiisoft/yii-runner-roadrunner)
 
 Instantiate and run it in an entry script:
 
 ```php
-<?php
-
-declare(strict_types=1);
-
 use Yiisoft\Yii\Runner\Http\HttpApplicationRunner;
 
 require_once __DIR__ . '/autoload.php';
 
-(new HttpApplicationRunner(__DIR__, $_ENV['YII_DEBUG'], $_ENV['YII_ENV']))->run();
+(new HttpApplicationRunner(
+    rootPath: __DIR__, 
+    debug: $_ENV['YII_DEBUG'],
+    environment: $_ENV['YII_ENV']
+))->run();
 ```
 
-## ApplicationRunner creates config and default dependency injection container
+## Configuration
 
-### Create configs
+By default, `ApplicationRunner` uses [Yii Config](https://github.com/yiisoft/config) to load configuration for the
+selected `environment` and creates a [Yii DI container](https://github.com/yiisoft/di). Configuration group names
+are set through the runner's constructor parameters:
 
-In the ```parent abstract class ApplicationRunner``` of the adapters creates environment configs
-for one of the ```development```, ```production``` or ```other``` environments you create
+- `diGroup`: container definitions.
+- `diProvidersGroup`: service providers.
+- `diDelegatesGroup`: delegate containers.
+- `diTagsGroup`: service tags.
 
+Adapters provide defaults following the [config groups convention](https://yiisoft.github.io/docs/internals/022-config-groups.html).
+For example, the HTTP runner uses `di-web`, `di-providers-web`, `di-delegates-web`, and `di-tags-web`.
+These groups are separate from environments such as `dev` or `prod`.
 
-```php 
-<?php
+See [Yii Config](https://github.com/yiisoft/config#config-groups) for configuration groups and
+[environments](https://github.com/yiisoft/config#environments), [Yii DI](https://github.com/yiisoft/di) for container
+configuration, and [Yii Definitions](https://github.com/yiisoft/definitions) for definition syntax.
 
-declare(strict_types=1);
+To supply your own configuration or PSR-11 container, use `withConfig()` or `withContainer()` respectively.
+Both methods return a new runner instance.
 
-abstract class ApplicationRunner {
-    protected function createDefaultConfig(): Config
-    {
-        return ConfigFactory::create(new ConfigPaths($this->rootPath, 'config'), $this->environment);
-    }
-}
+## Documentation
 
-```
+- [Internals](docs/internals.md)
 
-Builds configs [package configs](https://github.com/yiisoft/config), the package supports the creation of
-```environments``` and ```groups``` of configs
-
-
-#### Config groups
-
-You can also set up config groups for the ```web``` or ```console```
-
-```json
-"extra": {
-    "config-plugin": {
-        "params": [
-            "params.php",
-            "?params-local.php"
-        ],
-        "common": "common.php",
-        "web": [
-            "$common",
-            "web.php",
-            "../src/Modules/*/config/web.php"
-        ],
-        "console": [
-            "$common",
-            "console.php",
-        ]
-    }
-}
-```
-
-#### Config environment
-
-The config package supports setting up environments such as ```development``` or ```production```
-
-```json
-"extra": {
-    "config-plugin-options": {
-        "source-directory": "config"
-    },
-    "config-plugin": {
-        "params": "params.php",
-        "web": "web.php"
-    },
-    "config-plugin-environments": {
-        "dev": {
-            "params": "dev/params.php",
-            "app": [
-                "$web",
-                "dev/app.php"
-            ]
-        },
-        "prod": {
-            "app": "prod/app.php"
-        }
-    }
-}
-```
-
-Learn more about setting up and building configs in [Config package](https://github.com/yiisoft/config)
-
-## DI container
-
-After creating the configuration, ApplicationRunner creates a default dependency injection container,
-a ```group``` of configs from the configured ```environment``` is added to the container.
-
-```php
-protected function createDefaultContainer(ConfigInterface $config, string $definitionEnvironment): Container
-{
-    $containerConfig = ContainerConfig::create()->withValidate($this->debug);
-
-    if ($config->has($definitionEnvironment)) {
-        $containerConfig = $containerConfig->withDefinitions($config->get($definitionEnvironment));
-    }
-
-    if ($config->has("providers-$definitionEnvironment")) {
-        $containerConfig = $containerConfig->withProviders($config->get("providers-$definitionEnvironment"));
-    }
-
-    if ($config->has("delegates-$definitionEnvironment")) {
-        $containerConfig = $containerConfig->withDelegates($config->get("delegates-$definitionEnvironment"));
-    }
-
-    if ($config->has("tags-$definitionEnvironment")) {
-        $containerConfig = $containerConfig->withTags($config->get("tags-$definitionEnvironment"));
-    }
-
-    $containerConfig = $containerConfig->withDefinitions(
-        array_merge($containerConfig->getDefinitions(), [ConfigInterface::class => $config])
-    );
-
-    return new Container($containerConfig);
-}
-```
-At the beginning, an array of definitions for the container is initialized
-
-Example definitions:
-```php
-return [
-    EngineInterface::class => EngineMarkOne::class,
-    'full_definition' => [
-        'class' => EngineMarkOne::class,
-        '__construct()' => [42],
-        '$propertyName' => 'value',
-        'setX()' => [42],
-    ],
-    'closure' => fn (SomeFactory $factory) => $factory->create('args'),
-    'static_call_preferred' => fn () => MyFactory::create('args'),
-    'static_call_supported' => [MyFactory::class, 'create'],
-    'object' => new MyClass(),
-];
-```
-
-Next, the array of providers is initialized
-
-```php
-return [
-    CarFactoryProvider::class,
-    GarageFactoryProvider::class,
-]
-```
-Example provider: 
-```php
-use Yiisoft\Di\Container;
-use Yiisoft\Di\ServiceProviderInterface;
-
-class CarFactoryProvider extends ServiceProviderInterface
-{
-    public function getDefinitions(): array
-    {
-        return [
-            CarFactory::class => [
-                'class' => CarFactory::class,
-                '$color' => 'red',
-            ], 
-            EngineInterface::class => SolarEngine::class,
-            WheelInterface::class => [
-                'class' => Wheel::class,
-                '$color' => 'black',
-            ],
-            CarInterface::class => [
-                'class' => BMW::class,
-                '$model' => 'X5',
-            ],
-        ];    
-    }
-     
-    public function getExtensions(): array
-    {
-        return [
-            // Note that Garage should already be defined in container 
-            Garage::class => function(ContainerInterface $container, Garage $garage) {
-                $car = $container
-                    ->get(CarFactory::class)
-                    ->create();
-                $garage->setCar($car);
-                
-                return $garage;
-            }
-        ];
-    } 
-}
-```
-Then, an array of delegate containers is initialized, in which it is possible to get definitions
-if definitions were not found in the main container.
-
-To configure delegates, use an additional config:
-
-```php
-use Yiisoft\Di\Container;
-use Yiisoft\Di\ContainerConfig;
-
-$config = ContainerConfig::create()
-    ->withDelegates([
-        function (ContainerInterface $container): ContainerInterface {
-            // ...
-        }
-    ]);
-
-
-$container = new Container($config);
-```
-
-Finally, an array of definition tags is initialized:
-
-```php
-return [
-    'command-services' => [ CreateUser::class, DeleteUser::class ]
-    'query-services' => [ GetAllUsers::class, GetUser::class ]
-]
-```
-
-For more information on creating container definitions, see [DI container](https://github.com/yiisoft/di)
-
-## Testing
-
-### Unit testing
-
-The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
-
-```shell
-./vendor/bin/phpunit
-```
-
-### Mutation testing
-
-The package tests are checked with [Infection](https://infection.github.io/) mutation framework with
-[Infection Static Analysis Plugin](https://github.com/Roave/infection-static-analysis-plugin). To run it:
-
-```shell
-./vendor/bin/roave-infection-static-analysis-plugin
-```
-
-### Static analysis
-
-The code is statically analyzed with [Psalm](https://psalm.dev/). To run static analysis:
-
-```shell
-./vendor/bin/psalm
-```
+If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a good place for that.
+You may also check out other [Yii Community Resources](https://www.yiiframework.com/community).
 
 ## License
 
-The Yii Runner is free software. It is released under the terms of the BSD License.
+The Yii Application Runner is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).

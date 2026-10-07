@@ -8,15 +8,34 @@ return [
         'params' => [
             '/' => [
                 'params.php',
+                'params-more.php',
             ],
         ],
-        'web' => [
+        'custom' => [
             '/' => [
-                'web.php',
+                'custom.php',
+                'custom2.php',
+            ],
+        ],
+        'di-web' => [
+            '/' => [
+                'di-web.php',
+            ],
+        ],
+        'events' => [
+            '/' => [
+                'events.php',
+            ],
+        ],
+        'events-more' => [
+            '/' => [
+                '$events',
+                'events-more.php',
             ],
         ],
         'events-web' => [
             '/' => [
+                '$events-more',
                 'events-web.php',
             ],
         ],
@@ -25,14 +44,14 @@ return [
                 'events-fail.php',
             ],
         ],
-        'providers-web' => [
+        'di-providers-web' => [
             '/' => [
-                'providers-web.php',
+                'di-providers-web.php',
             ],
         ],
-        'delegates-web' => [
+        'di-delegates-web' => [
             '/' => [
-                'delegates-web.php',
+                'di-delegates-web.php',
             ],
         ],
         'bootstrap-web' => [
@@ -40,9 +59,9 @@ return [
                 'bootstrap-web.php',
             ],
         ],
-        'tags-web' => [
+        'di-tags-web' => [
             '/' => [
-                'tags-web.php',
+                'di-tags-web.php',
             ],
         ],
     ],

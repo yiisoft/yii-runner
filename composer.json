@@ -10,11 +10,11 @@
     "license": "BSD-3-Clause",
     "support": {
         "issues": "https://github.com/yiisoft/yii-runner/issues?state=open",
+        "source": "https://github.com/yiisoft/yii-runner",
         "forum": "https://www.yiiframework.com/forum/",
         "wiki": "https://www.yiiframework.com/wiki/",
-        "irc": "irc://irc.freenode.net/yii",
-        "chat": "https://t.me/yii3en",
-        "source": "https://github.com/yiisoft/yii-runner"
+        "irc": "ircs://irc.libera.chat:6697/yii",
+        "chat": "https://t.me/yii3en"
     },
     "funding": [
         {
@@ -27,19 +27,23 @@
         }
     ],
     "require": {
-        "php": "^8.0",
-        "psr/container": "^1.0|^2.0",
+        "php": "8.0 - 8.5",
+        "psr/container": "^1.0 || ^2.0",
         "yiisoft/config": "^1.1",
-        "yiisoft/definitions": "^1.0|^2.0",
+        "yiisoft/definitions": "^1.0 || ^2.0 || ^3.0",
         "yiisoft/di": "^1.0",
-        "yiisoft/yii-event": "^1.0"
+        "yiisoft/yii-event": "^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "roave/infection-static-analysis-plugin": "^1.20",
-        "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.23",
-        "yiisoft/test-support": "^2.0"
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpunit/phpunit": "^9.6.22",
+        "rector/rector": "^2.0.11",
+        "roave/infection-static-analysis-plugin": "^1.25",
+        "shipmonk/composer-dependency-analyser": "^1.8",
+        "spatie/phpunit-watcher": "^1.23.6",
+        "vimeo/psalm": "^4.30 || ^5.26.1 || ^6.10",
+        "yiisoft/code-style": "^1.1",
+        "yiisoft/test-support": "^3.0.2"
     },
     "suggest": {
         "yiisoft/yii-runner-console": "Allows to run console application",
@@ -71,6 +75,9 @@
     },
     "scripts": {
         "test": "phpunit --testdox --no-interaction",
-        "test-watch": "phpunit-watcher watch"
+        "test-watch": "phpunit-watcher watch",
+        "rector": "rector",
+        "cs-fix": "php-cs-fixer fix",
+        "dependency-analyser": "composer-dependency-analyser"
     }
 }

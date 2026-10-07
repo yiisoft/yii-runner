@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 return [
-    'e1' => [
-        ['app4', 'handler4'],
+    'a' => [
+        'b' => 7,
+        'c' => 8,
     ],
 ];

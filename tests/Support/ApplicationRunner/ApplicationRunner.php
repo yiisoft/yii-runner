@@ -6,51 +6,62 @@ namespace Yiisoft\Yii\Runner\Tests\Support\ApplicationRunner;
 
 use Psr\Container\ContainerInterface;
 use Yiisoft\Config\Config;
-use Yiisoft\Config\ConfigInterface;
-use Yiisoft\Di\Container;
 
 final class ApplicationRunner extends \Yiisoft\Yii\Runner\ApplicationRunner
 {
-    public function __construct()
-    {
-        parent::__construct(__DIR__, true, null);
+    public function __construct(
+        bool $checkEvents = true,
+        string $eventsGroup = 'events-web',
+        ?string $bootstrapGroup = 'bootstrap-web',
+        array $configModifiers = [],
+        protected string $configDirectory = 'config',
+        protected string $vendorDirectory = 'vendor',
+        string $configMergePlanFile = '.merge-plan.php',
+    ) {
+        parent::__construct(
+            rootPath: __DIR__,
+            debug: true,
+            checkEvents: $checkEvents,
+            environment: null,
+            bootstrapGroup: $bootstrapGroup,
+            eventsGroup: $eventsGroup,
+            diGroup: 'di-web',
+            diProvidersGroup: 'di-providers-web',
+            diDelegatesGroup: 'di-delegates-web',
+            diTagsGroup: 'di-tags-web',
+            paramsGroup: 'params',
+            nestedParamsGroups: [],
+            nestedEventsGroups: ['events', 'events-more'],
+            configModifiers: $configModifiers,
+            configDirectory: $configDirectory,
+            vendorDirectory: $vendorDirectory,
+            configMergePlanFile: $configMergePlanFile,
+        );
     }
 
     public function run(): void
     {
-        $config = $this->getConfig();
-        $container = $this->getContainer($config, 'web');
-        $this->runBootstrap($config, $container);
-        $this->checkEvents($config, $container);
+        $this->runBootstrap();
+        $this->checkEvents();
     }
 
-    public function runBootstrap(ConfigInterface $config, ContainerInterface $container): void
+    public function doCheckEvents(): void
     {
-        parent::runBootstrap($config, $container);
+        $this->checkEvents();
     }
 
-    public function checkEvents(ConfigInterface $config, ContainerInterface $container): void
+    public function doRunBootstrap(): void
     {
-        parent::checkEvents($config, $container);
+        $this->runBootstrap();
     }
 
-    public function getConfig(): ConfigInterface
+    public function getRunnerConfig(): Config
     {
-        return parent::getConfig();
+        return $this->getConfig();
     }
 
-    public function getContainer(ConfigInterface $config, string $definitionEnvironment): ContainerInterface
+    public function getRunnerContainer(): ContainerInterface
     {
-        return parent::getContainer($config, $definitionEnvironment);
-    }
-
-    public function createDefaultConfig(): Config
-    {
-        return parent::createDefaultConfig();
-    }
-
-    public function createDefaultContainer(ConfigInterface $config, string $definitionEnvironment): Container
-    {
-        return parent::createDefaultContainer($config, $definitionEnvironment);
+        return $this->getContainer();
     }
 }
