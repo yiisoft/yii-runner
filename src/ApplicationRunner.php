@@ -126,6 +126,9 @@ abstract class ApplicationRunner implements RunnerInterface
     final protected function runBootstrap(): void
     {
         $bootstrapList = $this->getConfiguration($this->bootstrapGroup);
+        /**
+         * @psalm-suppress RiskyTruthyFalsyComparison `empty()` is used intentionally to handle both `null` and empty array.
+         */
         if (empty($bootstrapList)) {
             return;
         }
